@@ -77,6 +77,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pengaturan', [KelolaPengaturanController::class, 'index'])->name('pengaturan');
     Route::put('/pengaturan', [KelolaPengaturanController::class, 'update'])->name('pengaturan.update');
     Route::post('/pengaturan/upload-logo', [KelolaPengaturanController::class, 'uploadLogo'])->name('pengaturan.upload-logo');
+    Route::post('/pengaturan/banner', [KelolaPengaturanController::class, 'storeBanner'])->name('pengaturan.banner.store');
+    Route::delete('/pengaturan/banner/{id}', [KelolaPengaturanController::class, 'destroyBanner'])->name('pengaturan.banner.destroy');
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
