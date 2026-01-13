@@ -3,181 +3,234 @@
 @section('title', 'Kelola Kriteria')
 
 @section('content')
-    <div class="container mx-auto px-6 py-8">
-        <!-- Header -->
-        <div class="mb-6 flex items-center justify-between">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">Kriteria & Bobot</h1>
+            <p class="text-sm text-slate-500 mt-1">Kelola variabel penilaian untuk metode SMART.</p>
+        </div>
+
+        <button onclick="openModalAdd()"
+            class="px-5 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition text-sm font-bold shadow-lg shadow-orange-600/20 flex items-center">
+            <i class="fas fa-plus mr-2"></i> Tambah Kriteria
+        </button>
+    </div>
+
+    <div
+        class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] mb-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-1 {{ $totalBobot == 1 ? 'bg-emerald-500' : 'bg-rose-500' }}"></div>
+
+        <div class="flex items-center gap-4 z-10">
+            <div
+                class="w-12 h-12 rounded-full {{ $totalBobot == 1 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }} flex items-center justify-center text-xl">
+                <i class="fas {{ $totalBobot == 1 ? 'fa-balance-scale' : 'fa-exclamation-triangle' }}"></i>
+            </div>
             <div>
-                <h1 class="text-3xl font-bold text-white mb-2">
-                    <i class="fas fa-sliders-h mr-3"></i>Kelola Kriteria & Bobot
-                </h1>
-                <p class="text-gray-400">Atur kriteria penilaian metode SMART</p>
-            </div>
-            <button onclick="openModalAdd()"
-                class="px-6 py-3 gradient-orange rounded-lg font-semibold hover:opacity-90 transition">
-                <i class="fas fa-plus mr-2"></i>Tambah Kriteria
-            </button>
-        </div>
-
-        <!-- Info Total Bobot -->
-        <div class="glass-orange rounded-xl p-6 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-lg font-semibold text-white mb-1">Total Bobot Kriteria</h3>
-                    <p class="text-sm text-gray-300">Pastikan total bobot = 100%</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-4xl font-bold {{ $totalBobot == 1 ? 'text-green-400' : 'text-red-400' }}">
-                        {{ number_format($totalBobot * 100, 0) }}%
-                    </p>
-                    @if ($totalBobot == 1)
-                        <span class="text-sm text-green-400"><i class="fas fa-check-circle mr-1"></i>Valid</span>
-                    @else
-                        <span class="text-sm text-red-400"><i class="fas fa-exclamation-circle mr-1"></i>Invalid</span>
-                    @endif
-                </div>
+                <h3 class="text-lg font-bold text-slate-800">Total Bobot Saat Ini</h3>
+                <p class="text-sm text-slate-500">Jumlah keseluruhan bobot harus tepat 100% (1.0)</p>
             </div>
         </div>
 
-        <!-- Table Kriteria -->
-        <div class="glass-dark rounded-xl p-6">
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="border-b border-gray-700">
-                            <th class="text-left text-sm font-semibold text-gray-300 p-4">Kode</th>
-                            <th class="text-left text-sm font-semibold text-gray-300 p-4">Nama Kriteria</th>
-                            <th class="text-center text-sm font-semibold text-gray-300 p-4">Bobot</th>
-                            <th class="text-center text-sm font-semibold text-gray-300 p-4">Jenis</th>
-                            <th class="text-center text-sm font-semibold text-gray-300 p-4">Status</th>
-                            <th class="text-center text-sm font-semibold text-gray-300 p-4">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($kriterias as $kriteria)
-                            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
-                                <td class="p-4">
-                                    <span
-                                        class="font-mono font-bold text-orange-500 text-lg">{{ $kriteria->kode_kriteria }}</span>
-                                </td>
-                                <td class="p-4">
-                                    <p class="font-semibold text-white">{{ $kriteria->nama_kriteria }}</p>
-                                </td>
-                                <td class="p-4 text-center">
-                                    <span class="text-2xl font-bold text-orange-500">{{ $kriteria->bobot * 100 }}%</span>
-                                </td>
-                                <td class="p-4 text-center">
-                                    @if ($kriteria->jenis === 'benefit')
-                                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                            <i class="fas fa-arrow-up mr-1"></i>Benefit
-                                        </span>
-                                    @else
-                                        <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
-                                            <i class="fas fa-arrow-down mr-1"></i>Cost
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="p-4 text-center">
-                                    @if ($kriteria->status_aktif)
-                                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                            <i class="fas fa-check-circle mr-1"></i>Aktif
-                                        </span>
-                                    @else
-                                        <span class="px-3 py-1 bg-gray-500/20 text-gray-400 rounded-full text-sm">
-                                            <i class="fas fa-times-circle mr-1"></i>Nonaktif
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="p-4 text-center">
-                                    <button onclick='openModalEdit({{ json_encode($kriteria) }})'
-                                        class="px-3 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold transition mr-2">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="deleteKriteria({{ $kriteria->kriteria_id }})"
-                                        class="px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold transition">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="p-8 text-center text-gray-400">
-                                    <i class="fas fa-inbox text-4xl mb-2"></i>
-                                    <p>Belum ada kriteria</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="text-right z-10">
+            <div class="flex items-center justify-end gap-3 mb-1">
+                <span class="text-3xl font-black {{ $totalBobot == 1 ? 'text-emerald-600' : 'text-rose-600' }}">
+                    {{ number_format($totalBobot * 100, 0) }}%
+                </span>
+                @if ($totalBobot == 1)
+                    <span
+                        class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-200">
+                        VALID
+                    </span>
+                @else
+                    <span class="px-2.5 py-1 bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200">
+                        INVALID
+                    </span>
+                @endif
             </div>
+            @if ($totalBobot != 1)
+                <p class="text-xs text-rose-500 font-medium">Harap sesuaikan kembali bobot kriteria.</p>
+            @endif
         </div>
     </div>
 
-    <!-- Modal Add/Edit -->
-    <div id="modalKriteria" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50"
+    <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-200">
+                        <th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">Kode
+                        </th>
+                        <th class="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Nama
+                            Kriteria</th>
+                        <th class="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">
+                            Bobot</th>
+                        <th class="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">
+                            Jenis</th>
+                        <th class="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">
+                            Status</th>
+                        <th class="text-right py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-40">Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($kriterias as $kriteria)
+                        <tr class="hover:bg-slate-50/50 transition-colors group">
+                            <td class="py-4 px-6">
+                                <span
+                                    class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded text-xs border border-slate-200">
+                                    {{ $kriteria->kode_kriteria }}
+                                </span>
+                            </td>
+                            <td class="py-4 px-6">
+                                <p class="font-bold text-slate-700 text-sm">{{ $kriteria->nama_kriteria }}</p>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                <span class="font-bold text-slate-700">{{ $kriteria->bobot * 100 }}%</span>
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                @if ($kriteria->jenis === 'benefit')
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 text-xs font-bold">
+                                        <i class="fas fa-arrow-up mr-1.5 text-[10px]"></i> Benefit
+                                    </span>
+                                @else
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-50 text-amber-600 border border-amber-100 text-xs font-bold">
+                                        <i class="fas fa-arrow-down mr-1.5 text-[10px]"></i> Cost
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-6 text-center">
+                                @if ($kriteria->status_aktif)
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                        Aktif
+                                    </span>
+                                @else
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                                        Nonaktif
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-6 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button onclick='openModalEdit({{ json_encode($kriteria) }})'
+                                        class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-white hover:border-blue-200 hover:text-blue-600 hover:shadow-md transition-all flex items-center justify-center">
+                                        <i class="fas fa-pen text-xs"></i>
+                                    </button>
+                                    <button onclick="deleteKriteria({{ $kriteria->kriteria_id }})"
+                                        class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:bg-white hover:border-rose-200 hover:text-rose-600 hover:shadow-md transition-all flex items-center justify-center">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="py-12 text-center">
+                                <div class="flex flex-col items-center justify-center text-slate-400">
+                                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-3">
+                                        <i class="fas fa-layer-group text-2xl text-slate-300"></i>
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-500">Belum ada kriteria</p>
+                                    <p class="text-xs text-slate-400 mt-1">Silakan tambahkan kriteria baru</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="modalKriteria"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity"
         onclick="closeModal(event)">
-        <div class="glass-dark rounded-2xl p-8 max-w-2xl w-full mx-4" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold text-white" id="modalTitle">Tambah Kriteria</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times text-2xl"></i>
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden transform transition-all scale-95"
+            id="modalContent" onclick="event.stopPropagation()">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800" id="modalTitle">Tambah Kriteria</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
 
-            <form id="formKriteria">
+            <form id="formKriteria" class="p-6">
                 <input type="hidden" id="kriteriaId">
                 <input type="hidden" id="isEdit" value="0">
 
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-2">Kode Kriteria *</label>
-                        <input type="text" id="kode_kriteria" name="kode_kriteria" required maxlength="5"
-                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                            placeholder="C1, C2, C3...">
+                <div class="space-y-5">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Kode</label>
+                            <input type="text" id="kode_kriteria" name="kode_kriteria" required maxlength="5"
+                                placeholder="C1"
+                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition placeholder-slate-300">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Bobot (0-1)</label>
+                            <input type="number" id="bobot" name="bobot" required step="0.01" min="0"
+                                max="1" placeholder="0.25"
+                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition placeholder-slate-300">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-2">Nama Kriteria *</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nama Kriteria</label>
                         <input type="text" id="nama_kriteria" name="nama_kriteria" required
-                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                            placeholder="Contoh: Tes Akhlak & Kepribadian">
+                            placeholder="Contoh: Tes Wawancara"
+                            class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition placeholder-slate-300">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-2">Bobot (0-1 atau 0-100%) *</label>
-                        <input type="number" id="bobot" name="bobot" required step="0.01" min="0"
-                            max="1"
-                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                            placeholder="0.35 atau 35%">
-                        <p class="text-xs text-gray-400 mt-1">Contoh: 0.35 untuk 35%, 0.25 untuk 25%</p>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Jenis Atribut</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="relative flex cursor-pointer">
+                                <input type="radio" name="jenis" id="jenis_benefit" value="benefit"
+                                    class="peer sr-only" required>
+                                <div
+                                    class="w-full p-3 text-center bg-white border border-slate-200 rounded-xl peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition cursor-pointer">
+                                    <span class="text-sm font-bold">Benefit</span>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 peer-checked:text-blue-400">Nilai tinggi
+                                        lebih baik</p>
+                                </div>
+                            </label>
+                            <label class="relative flex cursor-pointer">
+                                <input type="radio" name="jenis" id="jenis_cost" value="cost"
+                                    class="peer sr-only" required>
+                                <div
+                                    class="w-full p-3 text-center bg-white border border-slate-200 rounded-xl peer-checked:bg-amber-50 peer-checked:border-amber-500 peer-checked:text-amber-600 transition cursor-pointer">
+                                    <span class="text-sm font-bold">Cost</span>
+                                    <p class="text-[10px] text-slate-400 mt-0.5 peer-checked:text-amber-400">Nilai rendah
+                                        lebih baik</p>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-200 mb-2">Jenis Kriteria *</label>
-                        <select id="jenis" name="jenis" required
-                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none">
-                            <option value="">Pilih Jenis...</option>
-                            <option value="benefit">Benefit (Semakin tinggi semakin baik)</option>
-                            <option value="cost">Cost (Semakin rendah semakin baik)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" id="status_aktif" name="status_aktif" checked
-                                class="w-4 h-4 text-orange-500 bg-gray-800 border-gray-700 rounded focus:ring-orange-500">
-                            <span class="ml-2 text-sm text-gray-200">Kriteria Aktif</span>
+                    <div class="pt-2">
+                        <label
+                            class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                            <div class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="status_aktif" name="status_aktif" class="sr-only peer"
+                                    checked>
+                                <div
+                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-slate-700">Status Aktif</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-4">
+                <div class="mt-8 flex gap-3">
                     <button type="button" onclick="closeModal()"
-                        class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition">
-                        <i class="fas fa-times mr-2"></i>Batal
+                        class="flex-1 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition font-semibold text-sm">
+                        Batal
                     </button>
                     <button type="submit"
-                        class="px-6 py-3 gradient-orange rounded-lg font-semibold hover:opacity-90 transition">
-                        <i class="fas fa-save mr-2"></i>Simpan
+                        class="flex-1 py-2.5 bg-slate-800 text-white rounded-xl hover:bg-slate-700 transition font-semibold text-sm shadow-lg shadow-slate-800/20">
+                        Simpan Data
                     </button>
                 </div>
             </form>
@@ -186,146 +239,202 @@
 @endsection
 
 @section('scripts')
-    function openModalAdd() {
-    document.getElementById('modalTitle').textContent = 'Tambah Kriteria';
-    document.getElementById('formKriteria').reset();
-    document.getElementById('kriteriaId').value = '';
-    document.getElementById('isEdit').value = '0';
-    document.getElementById('modalKriteria').classList.remove('hidden');
-    document.getElementById('modalKriteria').classList.add('flex');
-    }
+    <script>
+        // Animation Helper
+        const modal = document.getElementById('modalKriteria');
+        const modalContent = document.getElementById('modalContent');
 
-    function openModalEdit(kriteria) {
-    document.getElementById('modalTitle').textContent = 'Edit Kriteria';
-    document.getElementById('kriteriaId').value = kriteria.kriteria_id;
-    document.getElementById('isEdit').value = '1';
-    document.getElementById('kode_kriteria').value = kriteria.kode_kriteria;
-    document.getElementById('nama_kriteria').value = kriteria.nama_kriteria;
-    document.getElementById('bobot').value = kriteria.bobot;
-    document.getElementById('jenis').value = kriteria.jenis;
-    document.getElementById('status_aktif').checked = kriteria.status_aktif;
+        function openModalAdd() {
+            document.getElementById('modalTitle').textContent = 'Tambah Kriteria';
+            document.getElementById('formKriteria').reset();
+            document.getElementById('kriteriaId').value = '';
+            document.getElementById('isEdit').value = '0';
 
-    document.getElementById('modalKriteria').classList.remove('hidden');
-    document.getElementById('modalKriteria').classList.add('flex');
-    }
+            // Reset Radio Buttons
+            document.querySelectorAll('input[name="jenis"]').forEach(el => el.checked = false);
 
-    function closeModal(event) {
-    if (!event || event.target === event.currentTarget) {
-    document.getElementById('modalKriteria').classList.add('hidden');
-    document.getElementById('modalKriteria').classList.remove('flex');
-    }
-    }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
 
-    document.getElementById('formKriteria').addEventListener('submit', async function(e) {
-    e.preventDefault();
+        function openModalEdit(kriteria) {
+            document.getElementById('modalTitle').textContent = 'Edit Kriteria';
+            document.getElementById('kriteriaId').value = kriteria.kriteria_id;
+            document.getElementById('isEdit').value = '1';
+            document.getElementById('kode_kriteria').value = kriteria.kode_kriteria;
+            document.getElementById('nama_kriteria').value = kriteria.nama_kriteria;
+            document.getElementById('bobot').value = kriteria.bobot;
+            document.getElementById('status_aktif').checked = kriteria.status_aktif;
 
-    const isEdit = document.getElementById('isEdit').value === '1';
-    const kriteriaId = document.getElementById('kriteriaId').value;
+            // Set Radio Button
+            if (kriteria.jenis === 'benefit') {
+                document.getElementById('jenis_benefit').checked = true;
+            } else {
+                document.getElementById('jenis_cost').checked = true;
+            }
 
-    const data = {
-    kode_kriteria: document.getElementById('kode_kriteria').value,
-    nama_kriteria: document.getElementById('nama_kriteria').value,
-    bobot: parseFloat(document.getElementById('bobot').value),
-    jenis: document.getElementById('jenis').value,
-    status_aktif: document.getElementById('status_aktif').checked,
-    };
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
 
-    try {
-    let url = '{{ route('admin.kriteria.store') }}';
-    let method = 'POST';
+        function closeModal(event) {
+            if (!event || event.target === event.currentTarget || event.currentTarget.tagName === 'BUTTON') {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 200);
+            }
+        }
 
-    if (isEdit) {
-    url = `/admin/kriteria/${kriteriaId}`;
-    method = 'PUT';
-    }
+        document.getElementById('formKriteria').addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-    const response = await fetch(url, {
-    method: method,
-    headers: {
-    'Content-Type': 'application/json',
-    'X-CSRF-TOKEN': csrfToken,
-    'X-HTTP-Method-Override': method
-    },
-    body: JSON.stringify(data)
-    });
+            const isEdit = document.getElementById('isEdit').value === '1';
+            const kriteriaId = document.getElementById('kriteriaId').value;
+            const jenis = document.querySelector('input[name="jenis"]:checked')?.value;
 
-    const result = await response.json();
+            if (!jenis) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Silakan pilih jenis kriteria (Benefit/Cost)'
+                });
+                return;
+            }
 
-    if (result.success) {
-    Swal.fire({
-    icon: 'success',
-    title: 'Berhasil!',
-    text: result.message,
-    confirmButtonColor: '#ea580c',
-    }).then(() => {
-    location.reload();
-    });
-    } else {
-    Swal.fire({
-    icon: 'error',
-    title: 'Gagal!',
-    text: result.message,
-    confirmButtonColor: '#ea580c',
-    });
-    }
-    } catch (error) {
-    Swal.fire({
-    icon: 'error',
-    title: 'Error!',
-    text: 'Terjadi kesalahan sistem',
-    confirmButtonColor: '#ea580c',
-    });
-    }
-    });
+            const data = {
+                kode_kriteria: document.getElementById('kode_kriteria').value,
+                nama_kriteria: document.getElementById('nama_kriteria').value,
+                bobot: parseFloat(document.getElementById('bobot').value),
+                jenis: jenis,
+                status_aktif: document.getElementById('status_aktif').checked,
+            };
 
-    function deleteKriteria(id) {
-    Swal.fire({
-    title: 'Hapus Kriteria?',
-    text: 'Data ini akan dihapus permanent!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#6b7280',
-    confirmButtonText: 'Ya, Hapus!',
-    cancelButtonText: 'Batal'
-    }).then(async (result) => {
-    if (result.isConfirmed) {
-    try {
-    const response = await fetch(`/admin/kriteria/${id}`, {
-    method: 'DELETE',
-    headers: {
-    'X-CSRF-TOKEN': csrfToken,
-    }
-    });
+            try {
+                let url = '{{ route('admin.kriteria.store') }}';
+                let method = 'POST';
 
-    const data = await response.json();
+                if (isEdit) {
+                    url = `/admin/kriteria/${kriteriaId}`;
+                    method = 'PUT';
+                }
 
-    if (data.success) {
-    Swal.fire({
-    icon: 'success',
-    title: 'Terhapus!',
-    text: data.message,
-    confirmButtonColor: '#ea580c',
-    }).then(() => {
-    location.reload();
-    });
-    } else {
-    Swal.fire({
-    icon: 'error',
-    title: 'Gagal!',
-    text: data.message,
-    confirmButtonColor: '#ea580c',
-    });
-    }
-    } catch (error) {
-    Swal.fire({
-    icon: 'error',
-    title: 'Error!',
-    text: 'Terjadi kesalahan sistem',
-    confirmButtonColor: '#ea580c',
-    });
-    }
-    }
-    });
-    }
+                // Loading state
+                Swal.fire({
+                    title: 'Menyimpan...',
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-HTTP-Method-Override': method
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: result.message,
+                        confirmButtonColor: '#f97316',
+                        customClass: {
+                            popup: 'rounded-2xl',
+                            confirmButton: 'rounded-xl'
+                        }
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: error.message || 'Terjadi kesalahan sistem',
+                    confirmButtonColor: '#f97316',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-xl'
+                    }
+                });
+            }
+        });
+
+        function deleteKriteria(id) {
+            Swal.fire({
+                title: 'Hapus Kriteria?',
+                text: 'Data yang dihapus tidak dapat dikembalikan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'px-5 py-2.5 rounded-xl font-bold',
+                    cancelButton: 'px-5 py-2.5 rounded-xl'
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/admin/kriteria/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content,
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Terhapus!',
+                                text: data.message,
+                                confirmButtonColor: '#f97316',
+                                customClass: {
+                                    popup: 'rounded-2xl',
+                                    confirmButton: 'rounded-xl'
+                                }
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Gagal menghapus data',
+                            confirmButtonColor: '#f97316',
+                            customClass: {
+                                popup: 'rounded-2xl',
+                                confirmButton: 'rounded-xl'
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    </script>
 @endsection

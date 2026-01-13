@@ -3,252 +3,221 @@
 @section('title', 'Dashboard Pendaftar')
 
 @section('content')
-    <div class="container mx-auto px-6 py-8">
-        <!-- Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">
-                <i class="fas fa-tachometer-alt mr-3"></i>Dashboard Pendaftar
-            </h1>
-            <p class="text-gray-400">Selamat datang, {{ Auth::user()->nama }}!</p>
+    <div class="mb-8">
+        <h1 class="text-2xl font-bold text-slate-800">Selamat Datang, {{ Auth::user()->nama }}! 👋</h1>
+        <p class="text-sm text-slate-500 mt-1">Pantau status pendaftaran dan hasil seleksi Anda di sini.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <div class="lg:col-span-8 space-y-8">
+
+            @if ($periodeAktif)
+                <div
+                    class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-1/3 bg-white/10 skew-x-12 transform translate-x-12"></div>
+                    <div class="relative z-10 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <i class="far fa-calendar-alt text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-orange-100 text-xs font-bold uppercase tracking-wider mb-1">Periode Aktif</p>
+                            <h3 class="text-xl font-bold">{{ $periodeAktif->nama_periode }}</h3>
+                            <p class="text-sm text-orange-50 mt-1">
+                                {{ \Carbon\Carbon::parse($periodeAktif->tanggal_mulai)->format('d M Y') }} s/d
+                                {{ \Carbon\Carbon::parse($periodeAktif->tanggal_selesai)->format('d M Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="bg-rose-50 rounded-2xl p-6 border border-rose-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center text-rose-500">
+                        <i class="fas fa-calendar-times text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-rose-700">Tidak Ada Periode Aktif</h3>
+                        <p class="text-sm text-rose-600">Pendaftaran santri baru sedang ditutup saat ini.</p>
+                    </div>
+                </div>
+            @endif
+
+            <div class="bg-white rounded-2xl p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <h3 class="text-lg font-bold text-slate-800 mb-6">Tahapan Pendaftaran</h3>
+
+                <div class="relative pl-4">
+                    <div class="absolute left-[19px] top-2 bottom-4 w-0.5 bg-slate-200"></div>
+
+                    <div class="relative flex gap-6 pb-8 group">
+                        <div
+                            class="w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm z-10 relative transition
+                            {{ $statusProfil ? 'bg-emerald-500 text-white' : 'bg-white border-orange-500 text-orange-500' }}">
+                            @if ($statusProfil)
+                                <i class="fas fa-check"></i>
+                            @else
+                                <span>1</span>
+                            @endif
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <h4 class="font-bold text-slate-800 {{ $statusProfil ? 'text-emerald-600' : '' }}">Lengkapi
+                                Biodata</h4>
+                            <p class="text-sm text-slate-500 mb-3">Isi data diri, orang tua, dan asal sekolah.</p>
+                            @if (!$statusProfil)
+                                <a href="{{ route('pendaftar.profil') }}"
+                                    class="inline-flex items-center px-4 py-2 bg-orange-600 text-white text-xs font-bold rounded-lg hover:bg-orange-700 transition shadow-lg shadow-orange-600/20">
+                                    Lengkapi Sekarang <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="relative flex gap-6 pb-8 group">
+                        <div
+                            class="w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm z-10 relative transition
+                            {{ $statusPendaftaran ? 'bg-emerald-500 text-white' : ($statusProfil ? 'bg-white border-orange-500 text-orange-500' : 'bg-slate-100 text-slate-400') }}">
+                            @if ($statusPendaftaran)
+                                <i class="fas fa-check"></i>
+                            @else
+                                <span>2</span>
+                            @endif
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <h4 class="font-bold text-slate-800 {{ $statusPendaftaran ? 'text-emerald-600' : '' }}">Upload
+                                Berkas & Daftar</h4>
+                            <p class="text-sm text-slate-500 mb-3">Unggah dokumen persyaratan dan kirim pendaftaran.</p>
+                            @if ($statusProfil && !$statusPendaftaran && $periodeAktif)
+                                <a href="{{ route('pendaftar.pendaftaran') }}"
+                                    class="inline-flex items-center px-4 py-2 bg-orange-600 text-white text-xs font-bold rounded-lg hover:bg-orange-700 transition shadow-lg shadow-orange-600/20">
+                                    Daftar Sekarang <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            @elseif($statusPendaftaran)
+                                <span
+                                    class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-100">
+                                    Sudah Mendaftar (#{{ $pendaftaran->no_pendaftaran }})
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="relative flex gap-6 pb-8 group">
+                        <div
+                            class="w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm z-10 relative transition
+                            {{ $statusPendaftaran ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400' }}">
+                            <span>3</span>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <h4 class="font-bold text-slate-800">Verifikasi & Cetak Kartu</h4>
+                            <p class="text-sm text-slate-500 mb-2">Admin akan memverifikasi berkas Anda.</p>
+
+                            @if ($statusPendaftaran)
+                                <div class="flex items-center gap-3 mt-2">
+                                    @if ($pendaftaran->status_verifikasi == 'diterima')
+                                        <span
+                                            class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded border border-emerald-100">
+                                            <i class="fas fa-check-circle mr-1"></i> Berkas Diverifikasi
+                                        </span>
+                                        <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}"
+                                            target="_blank" class="text-xs font-bold text-blue-600 hover:underline">
+                                            <i class="fas fa-print mr-1"></i> Cetak Kartu Ujian
+                                        </a>
+                                    @elseif($pendaftaran->status_verifikasi == 'ditolak')
+                                        <span
+                                            class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded border border-rose-100">
+                                            <i class="fas fa-times-circle mr-1"></i> Berkas Ditolak
+                                        </span>
+                                    @else
+                                        <span
+                                            class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100">
+                                            <i class="fas fa-clock mr-1"></i> Menunggu Verifikasi
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="relative flex gap-6 group">
+                        <div
+                            class="w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-sm z-10 relative transition
+                            {{ $pengumuman ? 'bg-purple-500 text-white' : 'bg-slate-100 text-slate-400' }}">
+                            <span>4</span>
+                        </div>
+                        <div class="flex-1 pt-1">
+                            <h4 class="font-bold text-slate-800">Hasil Seleksi</h4>
+                            <p class="text-sm text-slate-500">Pengumuman kelulusan akhir.</p>
+                            @if ($pengumuman)
+                                <a href="{{ route('pendaftar.pengumuman') }}"
+                                    class="mt-3 inline-flex items-center px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 transition shadow-lg shadow-purple-600/20">
+                                    Lihat Hasil <i class="fas fa-eye ml-2"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- Alert Periode -->
-        @if ($periodeAktif)
-            <div class="glass-orange rounded-xl p-6 mb-8">
-                <div class="flex items-center">
-                    <i class="fas fa-calendar-alt text-3xl text-orange-500 mr-4"></i>
+        <div class="lg:col-span-4 space-y-6">
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                        <i class="far fa-user text-xl"></i>
+                    </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-white mb-1">{{ $periodeAktif->nama_periode }}</h3>
-                        <p class="text-gray-300">
-                            Periode: {{ \Carbon\Carbon::parse($periodeAktif->tanggal_mulai)->format('d M Y') }} -
-                            {{ \Carbon\Carbon::parse($periodeAktif->tanggal_selesai)->format('d M Y') }}
-                        </p>
+                        <p class="text-xs text-slate-400 uppercase font-bold">Status Profil</p>
+                        @if ($statusProfil)
+                            <p class="text-emerald-600 font-bold flex items-center gap-1">
+                                <i class="fas fa-check-circle"></i> Lengkap
+                            </p>
+                        @else
+                            <p class="text-rose-500 font-bold flex items-center gap-1">
+                                <i class="fas fa-times-circle"></i> Belum Lengkap
+                            </p>
+                        @endif
                     </div>
                 </div>
             </div>
-        @else
-            <div class="glass-dark rounded-xl p-6 mb-8 border border-red-500/30">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-triangle text-3xl text-red-500 mr-4"></i>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                        <i class="far fa-file-alt text-xl"></i>
+                    </div>
                     <div>
-                        <h3 class="text-xl font-semibold text-white mb-1">Tidak Ada Periode Aktif</h3>
-                        <p class="text-gray-300">Saat ini belum ada periode pendaftaran yang dibuka.</p>
+                        <p class="text-xs text-slate-400 uppercase font-bold">Pendaftaran</p>
+                        @if ($statusPendaftaran)
+                            <p class="text-blue-600 font-bold">Sudah Submit</p>
+                        @else
+                            <p class="text-slate-500 font-bold">Belum Submit</p>
+                        @endif
                     </div>
                 </div>
             </div>
-        @endif
 
-        <!-- Progress Timeline -->
-        <div class="glass-dark rounded-xl p-6 mb-8">
-            <h3 class="text-xl font-semibold text-white mb-6">
-                <i class="fas fa-tasks mr-2"></i>Progress Pendaftaran
-            </h3>
-
-            <div class="space-y-6">
-                <!-- Step 1: Profil -->
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        @if ($statusProfil)
-                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-check text-white text-xl"></i>
-                            </div>
-                        @else
-                            <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold">1</span>
-                            </div>
-                        @endif
+            <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                        <i class="fas fa-trophy text-xl"></i>
                     </div>
-                    <div class="ml-4 flex-1">
-                        <h4 class="text-lg font-semibold text-white">Lengkapi Profil</h4>
-                        <p class="text-gray-400 text-sm mb-2">Isi data pribadi dan data orang tua</p>
-                        @if ($statusProfil)
-                            <span class="inline-block px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                <i class="fas fa-check-circle mr-1"></i>Selesai
-                            </span>
-                        @else
-                            <a href="{{ route('pendaftar.profil') }}"
-                                class="inline-block px-4 py-2 gradient-orange rounded-lg text-sm font-semibold hover:opacity-90 transition">
-                                <i class="fas fa-edit mr-1"></i>Lengkapi Sekarang
-                            </a>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Connector Line -->
-                <div class="ml-6 w-0.5 h-8 bg-gray-700"></div>
-
-                <!-- Step 2: Pendaftaran -->
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        @if ($statusPendaftaran)
-                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-check text-white text-xl"></i>
-                            </div>
-                        @elseif($statusProfil)
-                            <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold">2</span>
-                            </div>
-                        @else
-                            <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold">2</span>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h4 class="text-lg font-semibold text-white">Submit Pendaftaran</h4>
-                        <p class="text-gray-400 text-sm mb-2">Upload dokumen dan submit formulir pendaftaran</p>
-                        @if ($statusPendaftaran)
-                            <span class="inline-block px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                <i class="fas fa-check-circle mr-1"></i>Selesai - No: {{ $pendaftaran->no_pendaftaran }}
-                            </span>
-                        @elseif($statusProfil && $periodeAktif)
-                            <a href="{{ route('pendaftar.pendaftaran') }}"
-                                class="inline-block px-4 py-2 gradient-orange rounded-lg text-sm font-semibold hover:opacity-90 transition">
-                                <i class="fas fa-file-alt mr-1"></i>Daftar Sekarang
-                            </a>
-                        @else
-                            <span class="inline-block px-3 py-1 bg-gray-600/20 text-gray-400 rounded-full text-sm">
-                                <i class="fas fa-lock mr-1"></i>Lengkapi profil terlebih dahulu
-                            </span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Connector Line -->
-                <div class="ml-6 w-0.5 h-8 bg-gray-700"></div>
-
-                <!-- Step 3: Ujian -->
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
-                        @if ($statusPendaftaran)
-                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-file-pdf text-white text-xl"></i>
-                            </div>
-                        @else
-                            <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold">3</span>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h4 class="text-lg font-semibold text-white">Cetak Kartu Ujian</h4>
-                        <p class="text-gray-400 text-sm mb-2">Download dan cetak kartu untuk tes & wawancara</p>
-                        @if ($statusPendaftaran)
-                            <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}" target="_blank"
-                                class="inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-sm font-semibold transition">
-                                <i class="fas fa-download mr-1"></i>Download Kartu
-                            </a>
-                        @else
-                            <span class="inline-block px-3 py-1 bg-gray-600/20 text-gray-400 rounded-full text-sm">
-                                <i class="fas fa-lock mr-1"></i>Submit pendaftaran terlebih dahulu
-                            </span>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Connector Line -->
-                <div class="ml-6 w-0.5 h-8 bg-gray-700"></div>
-
-                <!-- Step 4: Pengumuman -->
-                <div class="flex items-start">
-                    <div class="flex-shrink-0">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase font-bold">Hasil Akhir</p>
                         @if ($pengumuman)
-                            <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-bullhorn text-white text-xl"></i>
-                            </div>
+                            @if ($pengumuman->status_kelulusan == 'diterima')
+                                <p class="text-emerald-600 font-bold">LULUS</p>
+                            @elseif ($pengumuman->status_kelulusan == 'cadangan')
+                                <p class="text-amber-500 font-bold">CADANGAN</p>
+                            @else
+                                <p class="text-rose-500 font-bold">TIDAK LULUS</p>
+                            @endif
                         @else
-                            <div class="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-bold">4</span>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <h4 class="text-lg font-semibold text-white">Lihat Pengumuman</h4>
-                        <p class="text-gray-400 text-sm mb-2">Cek hasil seleksi penerimaan santri baru</p>
-                        @if ($pengumuman)
-                            <a href="{{ route('pendaftar.pengumuman') }}"
-                                class="inline-block px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg text-sm font-semibold transition">
-                                <i class="fas fa-eye mr-1"></i>Lihat Hasil
-                            </a>
-                        @else
-                            <span class="inline-block px-3 py-1 bg-gray-600/20 text-gray-400 rounded-full text-sm">
-                                <i class="fas fa-clock mr-1"></i>Menunggu pengumuman
-                            </span>
+                            <p class="text-slate-500 font-bold">Belum Ada</p>
                         @endif
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Info Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass-orange p-6 rounded-xl">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-user-circle text-3xl text-orange-500 mr-3"></i>
-                    <h3 class="text-lg font-semibold text-white">Status Profil</h3>
-                </div>
-                @if ($statusProfil)
-                    <p class="text-green-400 font-semibold">
-                        <i class="fas fa-check-circle mr-1"></i>Lengkap
-                    </p>
-                @else
-                    <p class="text-yellow-400 font-semibold">
-                        <i class="fas fa-exclamation-circle mr-1"></i>Belum Lengkap
-                    </p>
-                @endif
-            </div>
-
-            <div class="glass-orange p-6 rounded-xl">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-clipboard-check text-3xl text-orange-500 mr-3"></i>
-                    <h3 class="text-lg font-semibold text-white">Status Pendaftaran</h3>
-                </div>
-                @if ($statusPendaftaran)
-                    @if ($pendaftaran->status_verifikasi === 'pending')
-                        <p class="text-yellow-400 font-semibold">
-                            <i class="fas fa-clock mr-1"></i>Menunggu Verifikasi
-                        </p>
-                    @elseif($pendaftaran->status_verifikasi === 'diterima')
-                        <p class="text-green-400 font-semibold">
-                            <i class="fas fa-check-circle mr-1"></i>Diverifikasi
-                        </p>
-                    @else
-                        <p class="text-red-400 font-semibold">
-                            <i class="fas fa-times-circle mr-1"></i>Ditolak
-                        </p>
-                    @endif
-                @else
-                    <p class="text-gray-400 font-semibold">
-                        <i class="fas fa-minus-circle mr-1"></i>Belum Daftar
-                    </p>
-                @endif
-            </div>
-
-            <div class="glass-orange p-6 rounded-xl">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-trophy text-3xl text-orange-500 mr-3"></i>
-                    <h3 class="text-lg font-semibold text-white">Hasil Seleksi</h3>
-                </div>
-                @if ($pengumuman)
-                    @if ($pengumuman->status_kelulusan === 'diterima')
-                        <p class="text-green-400 font-semibold">
-                            <i class="fas fa-check-circle mr-1"></i>DITERIMA
-                        </p>
-                    @elseif($pengumuman->status_kelulusan === 'cadangan')
-                        <p class="text-yellow-400 font-semibold">
-                            <i class="fas fa-exclamation-circle mr-1"></i>CADANGAN
-                        </p>
-                    @else
-                        <p class="text-red-400 font-semibold">
-                            <i class="fas fa-times-circle mr-1"></i>TIDAK DITERIMA
-                        </p>
-                    @endif
-                @else
-                    <p class="text-gray-400 font-semibold">
-                        <i class="fas fa-clock mr-1"></i>Belum Ada
-                    </p>
-                @endif
-            </div>
         </div>
     </div>
 @endsection

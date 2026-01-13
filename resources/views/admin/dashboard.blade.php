@@ -1,196 +1,204 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Overview')
 
 @section('content')
-    <!-- Welcome Header -->
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-6 mb-6 text-white shadow-lg">
-        <div class="flex items-center justify-between flex-wrap gap-4">
-            <div>
-                <h1 class="text-xl font-bold mb-1">Selamat Datang, {{ Auth::user()->nama }}! 👋</h1>
-                <p class="text-sm text-orange-100">Kelola sistem penerimaan santri dengan mudah</p>
-            </div>
-            <div class="text-right">
-                <p class="text-xs text-orange-100">Hari ini</p>
-                <p class="text-base font-semibold">{{ now()->format('d F Y') }}</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Periode Aktif -->
-    @if ($periodeAktif)
-        <div class="bg-white rounded-xl p-5 mb-6 shadow-sm border-l-4 border-green-500">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-calendar-check text-xl text-green-600"></i>
+    <div class="mb-8">
+        @if ($periodeAktif)
+            <div
+                class="relative overflow-hidden bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                <div class="flex items-center gap-4 z-10">
+                    <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <i class="far fa-calendar-check text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-gray-800">{{ $periodeAktif->nama_periode }}</h3>
-                        <p class="text-xs text-gray-600">
-                            {{ \Carbon\Carbon::parse($periodeAktif->tanggal_mulai)->format('d M Y') }} -
+                        <h3 class="text-slate-800 font-bold text-lg leading-tight">{{ $periodeAktif->nama_periode }}</h3>
+                        <p class="text-slate-500 text-sm mt-1">
+                            <span class="font-medium text-slate-700">Kuota: {{ $periodeAktif->kuota_santri }}</span> &bull;
+                            {{ \Carbon\Carbon::parse($periodeAktif->tanggal_mulai)->format('d M') }} -
                             {{ \Carbon\Carbon::parse($periodeAktif->tanggal_selesai)->format('d M Y') }}
                         </p>
-                        <p class="text-xs text-gray-500 mt-0.5">Kuota: {{ $periodeAktif->kuota_santri }} santri</p>
                     </div>
                 </div>
-                <span class="bg-green-100 text-green-700 px-3 py-1.5 rounded-full text-xs font-semibold">
-                    <i class="fas fa-circle text-xs mr-1"></i>Periode Aktif
-                </span>
+
+                <div class="flex items-center gap-2 z-10">
+                    <span class="flex h-3 w-3 relative">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Sedang Berlangsung</span>
+                </div>
+
+                <div class="absolute right-0 top-0 opacity-5 pointer-events-none">
+                    <i class="fas fa-calendar-alt text-9xl text-slate-800 -mr-4 -mt-4 transform rotate-12"></i>
+                </div>
             </div>
-        </div>
-    @else
-        <div class="bg-white rounded-xl p-5 mb-6 shadow-sm border-l-4 border-red-500">
-            <div class="flex items-center justify-between flex-wrap gap-4">
+        @else
+            <div
+                class="relative overflow-hidden bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center justify-between">
+                <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-exclamation-triangle text-xl text-red-600"></i>
+                    <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+                        <i class="far fa-calendar-times text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-gray-800">Tidak Ada Periode Aktif</h3>
-                        <p class="text-xs text-gray-600">Aktifkan periode untuk memulai penerimaan</p>
+                        <h3 class="text-slate-800 font-bold text-lg">Tidak Ada Periode Aktif</h3>
+                        <p class="text-slate-500 text-sm">Penerimaan santri baru sedang ditutup.</p>
                     </div>
                 </div>
                 <a href="{{ route('admin.periode.index') }}"
-                    class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition text-xs font-semibold">
-                    <i class="fas fa-plus mr-1"></i>Kelola Periode
+                    class="px-5 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition">
+                    Buka Periode
                 </a>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
 
-    <!-- Statistik Utama -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-        <!-- Total Pendaftar -->
-        <div class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition border border-gray-100">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-users text-lg text-blue-600"></i>
-                </div>
-                <span class="text-xs font-medium text-gray-500">Total</span>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-0.5">{{ $totalPendaftar }}</h3>
-            <p class="text-xs text-gray-500">Pendaftar</p>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-        <!-- Diterima -->
-        <div class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition border border-gray-100">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-check-circle text-lg text-green-600"></i>
+        <div
+            class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 group">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Pendaftar</p>
+                    <h3 class="text-3xl font-extrabold text-slate-800 mt-1">{{ $totalPendaftar }}</h3>
                 </div>
-                <span class="text-xs font-medium text-gray-500">Lulus</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-users text-lg"></i>
+                </div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-0.5">{{ $totalDiterima }}</h3>
-            <p class="text-xs text-gray-500">Diterima</p>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 100%"></div>
+            </div>
         </div>
 
-        <!-- Cadangan -->
-        <div class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition border border-gray-100">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-11 h-11 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-clock text-lg text-yellow-600"></i>
+        <div
+            class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 group">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Lulus Seleksi</p>
+                    <h3 class="text-3xl font-extrabold text-slate-800 mt-1">{{ $totalDiterima }}</h3>
                 </div>
-                <span class="text-xs font-medium text-gray-500">Waiting</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-check-circle text-lg"></i>
+                </div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-0.5">{{ $totalCadangan }}</h3>
-            <p class="text-xs text-gray-500">Cadangan</p>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                @php $persenLulus = $totalPendaftar > 0 ? ($totalDiterima / $totalPendaftar) * 100 : 0; @endphp
+                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: {{ $persenLulus }}%"></div>
+            </div>
         </div>
 
-        <!-- Ditolak -->
-        <div class="bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition border border-gray-100">
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-11 h-11 bg-red-100 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-times-circle text-lg text-red-600"></i>
+        <div
+            class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 group">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Waiting List</p>
+                    <h3 class="text-3xl font-extrabold text-slate-800 mt-1">{{ $totalCadangan }}</h3>
                 </div>
-                <span class="text-xs font-medium text-gray-500">Rejected</span>
+                <div
+                    class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-clock text-lg"></i>
+                </div>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-0.5">{{ $totalDitolak }}</h3>
-            <p class="text-xs text-gray-500">Ditolak</p>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                @php $persenCadangan = $totalPendaftar > 0 ? ($totalCadangan / $totalPendaftar) * 100 : 0; @endphp
+                <div class="bg-amber-500 h-1.5 rounded-full" style="width: {{ $persenCadangan }}%"></div>
+            </div>
+        </div>
+
+        <div
+            class="bg-white p-6 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 hover:-translate-y-1 transition-transform duration-300 group">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Tidak Lulus</p>
+                    <h3 class="text-3xl font-extrabold text-slate-800 mt-1">{{ $totalDitolak }}</h3>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-times-circle text-lg"></i>
+                </div>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                @php $persenDitolak = $totalPendaftar > 0 ? ($totalDitolak / $totalPendaftar) * 100 : 0; @endphp
+                <div class="bg-rose-500 h-1.5 rounded-full" style="width: {{ $persenDitolak }}%"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Info Pesantren & Akses Cepat -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Info Pesantren -->
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-mosque text-orange-500 mr-2"></i>
-                Informasi Pesantren
-            </h3>
-            <div class="space-y-3">
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-user-graduate text-blue-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Santri Aktif</p>
-                            <p class="text-sm font-bold text-gray-800">{{ $pengaturan->jumlah_santri ?? 0 }} Santri</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-chalkboard-teacher text-green-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Tenaga Pengajar</p>
-                            <p class="text-sm font-bold text-gray-800">{{ $pengaturan->jumlah_guru ?? 0 }} Guru</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-purple-600"></i>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500">Alumni</p>
-                            <p class="text-sm font-bold text-gray-800">{{ $pengaturan->jumlah_alumni ?? 0 }} Alumni</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="bg-white rounded-2xl p-8 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+        <div class="flex items-center justify-between mb-6">
+            <h4 class="text-slate-800 font-bold text-lg">Data Pondok Pesantren</h4>
+            <a href="{{ route('admin.pengaturan') }}"
+                class="text-orange-500 hover:text-orange-600 text-sm font-medium transition">
+                Edit Data <i class="fas fa-arrow-right ml-1"></i>
+            </a>
         </div>
 
-        <!-- Akses Cepat -->
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-            <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
-                <i class="fas fa-bolt text-orange-500 mr-2"></i>
-                Akses Cepat
-            </h3>
-            <div class="grid grid-cols-2 gap-3">
-                <a href="{{ route('admin.pendaftar') }}"
-                    class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl hover:shadow-md transition text-center border border-blue-200">
-                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                        <i class="fas fa-users text-white"></i>
-                    </div>
-                    <p class="text-xs font-semibold text-gray-700">Pendaftar</p>
-                </a>
-                <a href="{{ route('admin.perhitungan') }}"
-                    class="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl hover:shadow-md transition text-center border border-green-200">
-                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                        <i class="fas fa-calculator text-white"></i>
-                    </div>
-                    <p class="text-xs font-semibold text-gray-700">Perhitungan</p>
-                </a>
-                <a href="{{ route('admin.kriteria.index') }}"
-                    class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl hover:shadow-md transition text-center border border-purple-200">
-                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                        <i class="fas fa-sliders-h text-white"></i>
-                    </div>
-                    <p class="text-xs font-semibold text-gray-700">Kriteria</p>
-                </a>
-                <a href="{{ route('admin.laporan') }}"
-                    class="p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl hover:shadow-md transition text-center border border-orange-200">
-                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                        <i class="fas fa-file-pdf text-white"></i>
-                    </div>
-                    <p class="text-xs font-semibold text-gray-700">Laporan</p>
-                </a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-indigo-500 shadow-sm">
+                    <i class="fas fa-user-graduate text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-slate-800">{{ $pengaturan->jumlah_santri ?? 0 }}</p>
+                    <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Total Santri</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-violet-500 shadow-sm">
+                    <i class="fas fa-chalkboard-teacher text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-slate-800">{{ $pengaturan->jumlah_guru ?? 0 }}</p>
+                    <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Total Guru</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-orange-500 shadow-sm">
+                    <i class="fas fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-slate-800">{{ $pengaturan->jumlah_alumni ?? 0 }}</p>
+                    <p class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Total Alumni</p>
+                </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek apakah ini login baru (redirect dari login biasanya bawa session 'success' atau 'status')
+            // Atau kita bisa paksa tampilkan notifikasi welcome sekali saja menggunakan session flash spesifik
+
+            @if (session('success') && str_contains(session('success'), 'Login'))
+                // Jika pesan sukses mengandung kata "Login" (sesuaikan dengan controller Anda)
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Selamat Datang, {{ Auth::user()->nama }}!',
+                    text: 'Senang melihat Anda kembali.'
+                });
+            @endif
+        });
+    </script>
 @endsection

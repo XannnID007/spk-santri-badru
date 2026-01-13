@@ -17,10 +17,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
 
-        /* Latar belakang dinamis mengikuti banner atau default */
+        /* Latar belakang dinamis */
         .background-image {
             position: absolute;
             inset: 0;
@@ -34,7 +34,7 @@
             object-fit: cover;
         }
 
-        /* Overlay Gelap - Identik dengan Hero Landing Page */
+        /* Overlay Gelap */
         .overlay {
             position: absolute;
             inset: 0;
@@ -45,7 +45,7 @@
             z-index: 1;
         }
 
-        /* Form Card - Diperkecil & Lebih Elegan */
+        /* Form Card - Super Compact */
         .login-card {
             position: relative;
             z-index: 10;
@@ -53,13 +53,11 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 1.5rem;
+            border-radius: 1.25rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 360px;
-            /* Ukuran diperkecil */
-            padding: 2rem;
-            /* Padding dikurangi agar lebih ringkas */
+            max-width: 320px;
+            padding: 1.5rem;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -76,13 +74,13 @@
         }
 
         .logo-container {
-            width: 3.5rem;
-            height: 3.5rem;
+            width: 3rem;
+            height: 3rem;
             background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            margin: 0 auto 0.75rem;
         }
 
         .logo-container img {
@@ -91,17 +89,31 @@
             object-fit: contain;
         }
 
+        .title-text {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
         .form-group {
             position: relative;
-            margin-bottom: 1rem;
+            margin-bottom: 0.85rem;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
-            border: 1.5px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
+            /* Padding kanan ditambah (2.5rem) agar teks tidak nabrak icon mata */
+            padding: 0.6rem 2.5rem 0.6rem 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.6rem;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.1);
             color: white;
@@ -115,30 +127,59 @@
         .form-input:focus {
             border-color: #f47200;
             background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 4px rgba(244, 114, 0, 0.15);
+            box-shadow: 0 0 0 3px rgba(244, 114, 0, 0.15);
         }
 
+        /* Icon Kiri (Envelope/Lock) */
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 0.85rem;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+            pointer-events: none;
+            /* Agar klik tembus ke input */
+        }
+
+        /* Icon Kanan (Mata/Eye) */
+        .toggle-password {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            z-index: 20;
+        }
+
+        .toggle-password:hover {
+            color: white;
+        }
+
+        .checkbox-wrapper {
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .checkbox-wrapper label {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.65rem;
             background: #f47200;
             color: white;
             border: none;
-            border-radius: 0.75rem;
+            border-radius: 0.6rem;
             font-weight: 700;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 15px -3px rgba(244, 114, 0, 0.3);
+            box-shadow: 0 8px 12px -3px rgba(244, 114, 0, 0.3);
         }
 
         .btn-primary:hover {
@@ -146,28 +187,12 @@
             transform: translateY(-2px);
         }
 
-        .btn-secondary {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.75rem;
-            font-weight: 600;
-            font-size: 0.8125rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
         .divider {
             display: flex;
             align-items: center;
-            margin: 1.25rem 0;
+            margin: 1rem 0;
             color: rgba(255, 255, 255, 0.4);
-            font-size: 0.75rem;
+            font-size: 0.65rem;
         }
 
         .divider::before,
@@ -178,29 +203,31 @@
         }
 
         .divider span {
-            padding: 0 0.75rem;
+            padding: 0 0.5rem;
         }
 
-        .checkbox-wrapper label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8125rem;
-        }
-
-        .title-text {
+        .btn-secondary {
+            width: 100%;
+            padding: 0.6rem;
+            background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-size: 1.5rem;
-            font-weight: 800;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.6rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
         }
 
-        .subtitle-text {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.8125rem;
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .back-link {
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.8125rem;
+            font-size: 0.7rem;
             transition: 0.3s;
+            margin-top: 1rem;
+            display: inline-block;
         }
 
         .back-link:hover {
@@ -209,8 +236,8 @@
 
         .error-text {
             color: #f87171;
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
         }
     </style>
 @endsection
@@ -243,11 +270,11 @@
                 @if ($pengaturan && $pengaturan->logo)
                     <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo">
                 @else
-                    <i class="fas fa-mosque text-orange-500 text-3xl"></i>
+                    <i class="fas fa-mosque text-orange-500 text-2xl"></i>
                 @endif
             </div>
 
-            <div class="text-center mb-6">
+            <div class="text-center">
                 <h2 class="title-text">Portal Masuk</h2>
                 <p class="subtitle-text">Silakan masuk ke akun Anda</p>
             </div>
@@ -266,34 +293,56 @@
 
                 <div class="form-group">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" name="password" class="form-input" placeholder="Password" required>
+                    <input type="password" name="password" id="password" class="form-input" placeholder="Password"
+                        required>
+                    <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+
                     @error('password')
                         <p class="error-text">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="flex items-center mb-6 checkbox-wrapper">
+                <div class="flex items-center checkbox-wrapper">
                     <input type="checkbox" name="remember" id="remember"
-                        class="w-4 h-4 rounded bg-white/10 border-white/20">
+                        class="w-3 h-3 rounded bg-white/10 border-white/20">
                     <label for="remember" class="ml-2 cursor-pointer">Ingat saya</label>
                 </div>
 
                 <button type="submit" class="btn-primary">
-                    MASUK SEKARANG
+                    MASUK
                 </button>
             </form>
 
             <div class="divider"><span>ATAU</span></div>
 
             <a href="{{ route('register') }}" class="btn-secondary block text-center">
-                Daftar Akun Baru
+                Daftar Akun
             </a>
 
-            <div class="text-center mt-6">
-                <a href="{{ route('landing') }}" class="back-link inline-flex items-center gap-2">
-                    <i class="fas fa-arrow-left text-[10px]"></i> Kembali ke Beranda
+            <div class="text-center">
+                <a href="{{ route('landing') }}" class="back-link inline-flex items-center gap-1">
+                    <i class="fas fa-arrow-left text-[9px]"></i> Kembali
                 </a>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+
+            togglePassword.addEventListener('click', function(e) {
+                // Toggle tipe input antara password dan text
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // Toggle icon mata
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
 @endsection

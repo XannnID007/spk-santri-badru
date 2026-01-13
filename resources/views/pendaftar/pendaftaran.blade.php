@@ -3,247 +3,261 @@
 @section('title', 'Pendaftaran Santri Baru')
 
 @section('content')
-    <div class="container mx-auto px-6 py-8">
-        <div class="max-w-4xl mx-auto">
-            @if ($pendaftaran)
-                <!-- Sudah Mendaftar -->
-                <div class="glass-orange rounded-xl p-8 text-center">
-                    <i class="fas fa-check-circle text-6xl text-green-400 mb-4"></i>
-                    <h2 class="text-3xl font-bold text-white mb-4">Pendaftaran Berhasil!</h2>
-                    <p class="text-gray-300 mb-2">No. Pendaftaran:</p>
-                    <p class="text-4xl font-bold text-orange-500 mb-6">{{ $pendaftaran->no_pendaftaran }}</p>
+    <div class="max-w-4xl mx-auto">
 
-                    <div class="glass-dark rounded-xl p-6 mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-                            <div>
-                                <p class="text-gray-400 text-sm">Tanggal Submit</p>
-                                <p class="text-white font-semibold">{{ $pendaftaran->tanggal_submit->format('d F Y H:i') }}
-                                </p>
+        @if ($pendaftaran)
+            <div
+                class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden text-center">
+                <div class="bg-emerald-50 p-8 border-b border-emerald-100">
+                    <div
+                        class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                        <i class="fas fa-check text-4xl text-emerald-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-emerald-800 mb-1">Pendaftaran Berhasil!</h2>
+                    <p class="text-emerald-600 text-sm">Data Anda telah kami terima dan sedang diproses.</p>
+                </div>
+
+                <div class="p-8">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Nomor Pendaftaran</p>
+                    <div class="inline-block bg-slate-50 px-6 py-3 rounded-xl border border-slate-200 mb-8">
+                        <span
+                            class="text-4xl font-mono font-bold text-slate-800 tracking-wider">{{ $pendaftaran->no_pendaftaran }}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8 text-left">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-xs text-slate-400 mb-1 font-bold uppercase">Tanggal Submit</p>
+                            <p class="text-slate-700 font-semibold">{{ $pendaftaran->tanggal_submit->format('d F Y, H:i') }}
+                                WIB</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <p class="text-xs text-slate-400 mb-1 font-bold uppercase">Status Verifikasi</p>
+                            @if ($pendaftaran->status_verifikasi === 'pending')
+                                <span class="inline-flex items-center text-amber-600 font-bold text-sm">
+                                    <i class="fas fa-clock mr-2"></i> Menunggu Verifikasi
+                                </span>
+                            @elseif($pendaftaran->status_verifikasi === 'diterima')
+                                <span class="inline-flex items-center text-emerald-600 font-bold text-sm">
+                                    <i class="fas fa-check-circle mr-2"></i> Terverifikasi
+                                </span>
+                            @else
+                                <span class="inline-flex items-center text-rose-600 font-bold text-sm">
+                                    <i class="fas fa-times-circle mr-2"></i> Ditolak
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if ($pendaftaran->status_verifikasi === 'diterima')
+                        <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}" target="_blank"
+                            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
+                            <i class="fas fa-print mr-2"></i> Cetak Kartu Ujian
+                        </a>
+                    @else
+                        <button disabled
+                            class="inline-flex items-center px-6 py-3 bg-slate-100 text-slate-400 rounded-xl font-bold cursor-not-allowed">
+                            <i class="fas fa-print mr-2"></i> Cetak Kartu (Menunggu Verifikasi)
+                        </button>
+                    @endif
+                </div>
+            </div>
+        @else
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-slate-800">Formulir Pendaftaran</h1>
+                <div class="flex items-center gap-2 text-sm text-slate-500 mt-1">
+                    <span>Periode: <strong class="text-orange-600">{{ $periodeAktif->nama_periode }}</strong></span>
+                    <span>&bull;</span>
+                    <span>Sisa Kuota: <strong>{{ $periodeAktif->kuota_santri }}</strong></span>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden">
+                <form id="pendaftaranForm" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="p-8">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center pb-4 border-b border-slate-100">
+                            <span
+                                class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3 text-sm">
+                                <i class="fas fa-school"></i>
+                            </span>
+                            Riwayat Pendidikan
+                        </h3>
+
+                        <div class="space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Asal Sekolah
+                                        (SMP/MTs) *</label>
+                                    <input type="text" name="asal_sekolah" required
+                                        placeholder="Contoh: SMP Negeri 1 Bandung"
+                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium text-slate-700">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Rata-rata Nilai
+                                        Rapor *</label>
+                                    <input type="number" name="rata_nilai" required step="0.01" min="0"
+                                        max="100" placeholder="85.50"
+                                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium text-slate-700">
+                                </div>
                             </div>
                             <div>
-                                <p class="text-gray-400 text-sm">Status Verifikasi</p>
-                                @if ($pendaftaran->status_verifikasi === 'pending')
-                                    <span
-                                        class="inline-block px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm">
-                                        <i class="fas fa-clock mr-1"></i>Menunggu
-                                    </span>
-                                @elseif($pendaftaran->status_verifikasi === 'diterima')
-                                    <span
-                                        class="inline-block px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
-                                        <i class="fas fa-check-circle mr-1"></i>Diverifikasi
-                                    </span>
-                                @else
-                                    <span class="inline-block px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm">
-                                        <i class="fas fa-times-circle mr-1"></i>Ditolak
-                                    </span>
-                                @endif
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Prestasi Akademik /
+                                    Non-Akademik (Opsional)</label>
+                                <textarea name="prestasi" rows="3" placeholder="Jelaskan prestasi yang pernah diraih (jika ada)..."
+                                    class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition text-slate-700"></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}" target="_blank"
-                        class="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold transition">
-                        <i class="fas fa-print mr-2"></i>Cetak Kartu Ujian
-                    </a>
-                </div>
-            @else
-                <!-- Form Pendaftaran -->
-                <div class="glass-orange rounded-xl p-6 mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-2">
-                        <i class="fas fa-file-alt mr-2"></i>Form Pendaftaran Santri Baru
-                    </h2>
-                    <p class="text-gray-300">{{ $periodeAktif->nama_periode }}</p>
-                    <p class="text-sm text-gray-400">Kuota: {{ $periodeAktif->kuota_santri }} santri</p>
-                </div>
+                    <div class="p-8 bg-slate-50/50 border-t border-slate-100">
+                        <h3
+                            class="text-lg font-bold text-slate-800 mb-6 flex items-center pb-4 border-b border-slate-200/60">
+                            <span
+                                class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-sm">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            Dokumen Persyaratan
+                        </h3>
 
-                <div class="glass-dark rounded-xl p-8">
-                    <form id="pendaftaranForm" enctype="multipart/form-data">
-                        @csrf
-
-                        <!-- Data Pendidikan -->
-                        <div class="mb-8">
-                            <h3 class="text-xl font-semibold text-orange-500 mb-4 border-b border-orange-500/30 pb-2">
-                                <i class="fas fa-school mr-2"></i>Data Pendidikan
-                            </h3>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">Asal Sekolah *</label>
-                                    <input type="text" name="asal_sekolah" required
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                                        placeholder="SMP/MTs ...">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @foreach ([['name' => 'file_kk', 'label' => 'Kartu Keluarga (KK)', 'icon' => 'fa-users', 'req' => true], ['name' => 'file_akta', 'label' => 'Akta Kelahiran', 'icon' => 'fa-baby', 'req' => true], ['name' => 'file_ijazah', 'label' => 'Ijazah / SKL', 'icon' => 'fa-graduation-cap', 'req' => true], ['name' => 'file_foto', 'label' => 'Pas Foto 3x4 (Resmi)', 'icon' => 'fa-camera', 'req' => true], ['name' => 'file_sktm', 'label' => 'SKTM (Jika Ada)', 'icon' => 'fa-file-invoice', 'req' => false]] as $doc)
+                                <div
+                                    class="bg-white p-4 rounded-xl border border-slate-200 hover:border-blue-300 transition group">
+                                    <label
+                                        class="block text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
+                                        <span><i
+                                                class="fas {{ $doc['icon'] }} mr-1.5 text-slate-400 group-hover:text-blue-500"></i>
+                                            {{ $doc['label'] }}</span>
+                                        @if ($doc['req'])
+                                            <span class="text-rose-500">*</span>
+                                        @endif
+                                    </label>
+                                    <input type="file" name="{{ $doc['name'] }}" {{ $doc['req'] ? 'required' : '' }}
+                                        accept=".pdf,.jpg,.jpeg,.png"
+                                        class="block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-600 hover:file:bg-blue-50 hover:file:text-blue-600 transition cursor-pointer">
+                                    <p class="text-[10px] text-slate-400 mt-2">Max: 2MB (PDF/JPG)</p>
                                 </div>
+                            @endforeach
+                        </div>
+                    </div>
 
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">Rata-rata Nilai Rapor
-                                        *</label>
-                                    <input type="number" name="rata_nilai" required step="0.01" min="0"
-                                        max="100"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                                        placeholder="85.50">
-                                </div>
-
-                                <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">Prestasi (Opsional)</label>
-                                    <textarea name="prestasi" rows="3"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none"
-                                        placeholder="Tuliskan prestasi akademik/non-akademik yang pernah diraih"></textarea>
-                                </div>
-                            </div>
+                    <div class="p-8 border-t border-slate-100 bg-white">
+                        <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 mb-6">
+                            <label class="flex items-start gap-3 cursor-pointer group">
+                                <input type="checkbox" id="pernyataan" required
+                                    class="mt-1 w-4 h-4 text-orange-600 bg-white border-slate-300 rounded focus:ring-orange-500 focus:ring-offset-0">
+                                <span class="text-sm text-slate-600 leading-relaxed group-hover:text-slate-800 transition">
+                                    Saya menyatakan bahwa data yang saya isikan adalah benar dan dapat
+                                    dipertanggungjawabkan.
+                                    Saya bersedia mengikuti seluruh proses seleksi yang ditetapkan oleh panitia Penerimaan
+                                    Santri Baru.
+                                </span>
+                            </label>
                         </div>
 
-                        <!-- Upload Dokumen -->
-                        <div class="mb-8">
-                            <h3 class="text-xl font-semibold text-orange-500 mb-4 border-b border-orange-500/30 pb-2">
-                                <i class="fas fa-file-upload mr-2"></i>Upload Dokumen Persyaratan
-                            </h3>
-
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">
-                                        <i class="fas fa-id-card mr-2"></i>Kartu Keluarga (KK) *
-                                    </label>
-                                    <input type="file" name="file_kk" required accept=".pdf,.jpg,.jpeg,.png"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
-                                    <p class="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (Max: 2MB)</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">
-                                        <i class="fas fa-certificate mr-2"></i>Akta Kelahiran *
-                                    </label>
-                                    <input type="file" name="file_akta" required accept=".pdf,.jpg,.jpeg,.png"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
-                                    <p class="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (Max: 2MB)</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">
-                                        <i class="fas fa-graduation-cap mr-2"></i>Ijazah / Surat Keterangan Lulus *
-                                    </label>
-                                    <input type="file" name="file_ijazah" required accept=".pdf,.jpg,.jpeg,.png"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
-                                    <p class="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (Max: 2MB)</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">
-                                        <i class="fas fa-image mr-2"></i>Pas Foto 3x4 *
-                                    </label>
-                                    <input type="file" name="file_foto" required accept=".jpg,.jpeg,.png"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
-                                    <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG (Max: 1MB)</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-200 mb-2">
-                                        <i class="fas fa-file-alt mr-2"></i>Surat Keterangan Tidak Mampu (SKTM) - Opsional
-                                    </label>
-                                    <input type="file" name="file_sktm" accept=".pdf,.jpg,.jpeg,.png"
-                                        class="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-500 file:text-white hover:file:bg-orange-600">
-                                    <p class="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (Max: 2MB)</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pernyataan -->
-                        <div class="mb-6">
-                            <div class="glass-orange rounded-lg p-4">
-                                <label class="flex items-start cursor-pointer">
-                                    <input type="checkbox" id="pernyataan" required
-                                        class="mt-1 w-4 h-4 text-orange-500 bg-gray-800 border-gray-700 rounded focus:ring-orange-500">
-                                    <span class="ml-3 text-sm text-gray-200">
-                                        Saya menyatakan bahwa data yang saya isikan adalah benar dan dapat
-                                        dipertanggungjawabkan.
-                                        Saya bersedia mengikuti seluruh proses seleksi yang ditetapkan oleh panitia.
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex justify-end space-x-4">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                             <button type="button" onclick="window.location='{{ route('pendaftar.dashboard') }}'"
-                                class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-lg font-semibold transition">
-                                <i class="fas fa-times mr-2"></i>Batal
+                                class="w-full md:w-auto px-6 py-2.5 bg-white border border-slate-300 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 transition">
+                                Batal
                             </button>
                             <button type="submit" id="submitBtn"
-                                class="px-6 py-3 gradient-orange rounded-lg font-semibold hover:opacity-90 transition">
-                                <i class="fas fa-paper-plane mr-2"></i>Submit Pendaftaran
+                                class="w-full md:w-auto px-8 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition shadow-lg shadow-orange-600/20 flex items-center justify-center gap-2">
+                                <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
                             </button>
                         </div>
-                    </form>
-                </div>
-            @endif
-        </div>
+                    </div>
+
+                </form>
+            </div>
+        @endif
     </div>
 @endsection
 
 @section('scripts')
-    @if (!$pendaftaran)
-        document.getElementById('pendaftaranForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+    <script>
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        const pernyataan = document.getElementById('pernyataan');
-        if (!pernyataan.checked) {
-        Swal.fire({
-        icon: 'warning',
-        title: 'Perhatian!',
-        text: 'Harap centang pernyataan terlebih dahulu',
-        confirmButtonColor: '#ea580c',
-        });
-        return;
-        }
+        @if (!$pendaftaran)
+            document.getElementById('pendaftaranForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+                const pernyataan = document.getElementById('pernyataan');
+                if (!pernyataan.checked) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pernyataan Belum Disetujui',
+                        text: 'Silakan centang kotak pernyataan untuk melanjutkan.',
+                        confirmButtonColor: '#f97316',
+                        customClass: {
+                            popup: 'rounded-2xl',
+                            confirmButton: 'rounded-xl'
+                        }
+                    });
+                    return;
+                }
 
-        const formData = new FormData(this);
+                const submitBtn = document.getElementById('submitBtn');
+                const originalBtnContent = submitBtn.innerHTML;
 
-        try {
-        const response = await fetch('{{ route('pendaftar.pendaftaran.store') }}', {
-        method: 'POST',
-        headers: {
-        'X-CSRF-TOKEN': csrfToken,
-        },
-        body: formData
-        });
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-        const data = await response.json();
+                const formData = new FormData(this);
 
-        if (data.success) {
-        Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        html: `
-        <p>${data.message}</p>
-        <p class="text-xl font-bold text-orange-500 mt-2">No. Pendaftaran: ${data.no_pendaftaran}</p>
-        `,
-        confirmButtonColor: '#ea580c',
-        }).then(() => {
-        window.location.reload();
-        });
-        } else {
-        Swal.fire({
-        icon: 'error',
-        title: 'Gagal!',
-        text: data.message || 'Terjadi kesalahan',
-        confirmButtonColor: '#ea580c',
-        });
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Pendaftaran';
-        }
-        } catch (error) {
-        Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'Terjadi kesalahan sistem',
-        confirmButtonColor: '#ea580c',
-        });
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Pendaftaran';
-        }
-        });
-    @endif
+                try {
+                    const response = await fetch('{{ route('pendaftar.pendaftaran.store') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pendaftaran Berhasil!',
+                            html: `<p class="text-sm text-slate-600">${data.message}</p>
+                               <div class="mt-4 p-3 bg-slate-100 rounded-lg border border-slate-200">
+                                 <span class="text-xs text-slate-500 uppercase font-bold">No. Pendaftaran</span><br>
+                                 <span class="text-xl font-mono font-bold text-orange-600">${data.no_pendaftaran}</span>
+                               </div>`,
+                            confirmButtonText: 'Lihat Status',
+                            confirmButtonColor: '#f97316',
+                            allowOutsideClick: false,
+                            customClass: {
+                                popup: 'rounded-2xl',
+                                confirmButton: 'rounded-xl'
+                            }
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        throw new Error(data.message || 'Terjadi kesalahan saat memproses data.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Mengirim',
+                        text: error.message || 'Terjadi kesalahan sistem. Silakan coba lagi.',
+                        confirmButtonColor: '#f97316',
+                        customClass: {
+                            popup: 'rounded-2xl',
+                            confirmButton: 'rounded-xl'
+                        }
+                    });
+
+                    // Reset Button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            });
+        @endif
+    </script>
 @endsection
