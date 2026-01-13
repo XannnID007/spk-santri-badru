@@ -9,22 +9,33 @@
             --brand-navy: #0f172a;
         }
 
-        /* Navbar Glass Transparent Black */
+        /* --- NAVBAR STYLES (ABU TRANSPARAN) --- */
         .glass-nav {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: transparent !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-bottom: 1px solid transparent;
             z-index: 100;
+            transition: background 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .glass-nav.scrolled {
+            /* REVISI: Warna Abu-abu Gelap Transparan */
+            background: rgba(30, 30, 30, 0.85) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
         .nav-logo-img {
-            height: 38px;
+            height: 36px;
+            /* Diperkecil sedikit */
             width: auto;
             object-fit: contain;
         }
 
-        /* Hero Section dengan Carousel */
+        /* --- HERO SECTION STYLES --- */
         .hero-wrapper {
             position: relative;
             min-height: 100vh;
@@ -32,7 +43,7 @@
             align-items: center;
             background-color: #000;
             overflow: hidden;
-            padding-top: 80px;
+            padding-top: 70px;
         }
 
         .hero-media-container {
@@ -59,487 +70,317 @@
             object-fit: cover;
         }
 
-        /* Overlay dengan gradien yang lebih elegan */
         .dark-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to right,
-                    rgba(0, 0, 0, 0.85) 0%,
-                    rgba(0, 0, 0, 0.6) 50%,
-                    rgba(0, 0, 0, 0.4) 100%);
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%);
             z-index: 1;
         }
 
-        /* Konten Hero - ukuran lebih proporsional */
         .hero-content {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1100px;
+            /* Max width diperkecil */
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fb923c;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 1.5rem;
-        }
-
         .hero-title {
             color: #ffffff !important;
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            /* REVISI: Ukuran font diperkecil */
+            font-size: clamp(1.8rem, 4vw, 3rem);
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
+            line-height: 1.1;
+            margin-bottom: 1.25rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .hero-desc {
-            color: #cbd5e1 !important;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            max-width: 550px;
-            margin-bottom: 2rem;
-        }
-
-        /* Tombol Hero - ukuran lebih kecil */
         .btn-hero {
             background: var(--brand-orange);
             color: white !important;
-            padding: 0.7rem 1.8rem;
-            border-radius: 0.75rem;
-            font-weight: 700;
+            padding: 0.6rem 1.5rem;
+            /* Padding tombol diperkecil */
+            border-radius: 50px;
             font-size: 0.9rem;
+            /* Font tombol diperkecil */
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(244, 114, 0, 0.4);
         }
 
         .btn-hero:hover {
-            transform: scale(1.05);
+            transform: translateY(-3px);
             background: #ff8c00;
-            box-shadow: 0 10px 30px rgba(244, 114, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(244, 114, 0, 0.6);
         }
 
         .btn-hero-outline {
-            padding: 0.7rem 1.8rem;
-            border-radius: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.6rem 1.5rem;
+            /* Padding tombol diperkecil */
+            border-radius: 50px;
+            font-size: 0.9rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white !important;
             font-weight: 700;
-            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             transition: all 0.3s ease;
         }
 
         .btn-hero-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.5);
+            background: white;
+            color: #333 !important;
+            border-color: white;
         }
 
-        /* Stats dengan ukuran lebih kecil */
-        .hero-stats {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            gap: 2rem;
-        }
-
-        .stat-item h3 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: white;
-        }
-
-        .stat-item p {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #94a3b8;
-            margin-top: 0.25rem;
-        }
-
-        /* Section Alur - Design inovatif dengan timeline */
-        .timeline-container {
+        /* --- ALUR TIMELINE STYLES (COMPACT VERSION) --- */
+        .timeline-section {
+            background-color: #f8fafc;
             position: relative;
-            padding: 3rem 0;
+            overflow: hidden;
         }
 
-        .timeline-line {
+        .timeline-vertical-line {
             position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(to right, #f47200, #ff8c00);
-            transform: translateY(-50%);
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            /* Garis lebih tipis */
+            background: #e2e8f0;
+            transform: translateX(-50%);
             z-index: 0;
         }
 
-        .timeline-step {
+        .timeline-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 3rem;
+            /* Jarak antar row diperkecil */
             position: relative;
             z-index: 1;
-            background: white;
-            border-radius: 1.5rem;
-            padding: 2rem;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid #f1f5f9;
-            min-height: 280px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        .timeline-step:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: var(--brand-orange);
-            box-shadow: 0 25px 50px rgba(244, 114, 0, 0.15);
-        }
-
-        .timeline-number {
-            width: 4rem;
-            height: 4rem;
-            background: linear-gradient(135deg, #f47200, #ff8c00);
-            color: white;
-            border-radius: 50%;
+        .timeline-content-wrapper {
+            width: 50%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 10px 30px rgba(244, 114, 0, 0.3);
             position: relative;
         }
 
-        .timeline-number::after {
+        .timeline-row:nth-child(odd) .timeline-content-wrapper {
+            justify-content: flex-end;
+            padding-right: 2.5rem;
+            /* Padding ke garis diperkecil */
+            margin-right: 50%;
+        }
+
+        .timeline-row:nth-child(even) .timeline-content-wrapper {
+            justify-content: flex-start;
+            padding-left: 2.5rem;
+            /* Padding ke garis diperkecil */
+            margin-left: 50%;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            /* Dot diperkecil */
+            height: 16px;
+            background: var(--brand-orange);
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(244, 114, 0, 0.2);
+            z-index: 2;
+        }
+
+        .timeline-card {
+            background: white;
+            padding: 1.5rem;
+            /* REVISI: Padding card diperkecil */
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            max-width: 380px;
+            /* REVISI: Lebar card diperkecil */
+            width: 100%;
+            position: relative;
+            transition: all 0.4s ease;
+            border-left: 4px solid var(--brand-orange);
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-step-num {
+            font-size: 2.5rem;
+            /* REVISI: Angka diperkecil */
+            font-weight: 900;
+            color: #f1f5f9;
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            line-height: 1;
+            z-index: 0;
+        }
+
+        .timeline-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- PROGRAM STYLES (COMPACT) --- */
+        .program-modern-card {
+            background: white;
+            border-radius: 16px;
+            /* Radius diperkecil */
+            padding: 1.75rem 1.5rem;
+            /* REVISI: Padding diperkecil */
+            border: 1px solid #f1f5f9;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .program-modern-card::before {
             content: '';
             position: absolute;
-            width: 120%;
-            height: 120%;
-            border: 2px solid var(--brand-orange);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0;
-            }
-        }
-
-        /* Section Program - Card interaktif dengan hover effect */
-        .program-card {
-            position: relative;
-            border-radius: 2rem;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-
-        .program-card:hover {
-            transform: translateY(-20px) scale(1.02);
-        }
-
-        .program-image-wrapper {
-            position: relative;
-            overflow: hidden;
-            border-radius: 2rem;
-            height: 350px;
-        }
-
-        .program-image {
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.7s ease;
+            height: 3px;
+            background: var(--brand-orange);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
         }
 
-        .program-card:hover .program-image {
-            transform: scale(1.15);
+        .program-modern-card:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            transform: translateY(-8px);
         }
 
-        .program-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 2rem;
-            transition: all 0.5s ease;
+        .program-modern-card:hover::before {
+            transform: scaleX(1);
         }
 
-        .program-card:hover .program-overlay {
-            background: linear-gradient(to top, rgba(244, 114, 0, 0.95) 0%, rgba(244, 114, 0, 0.7) 70%, transparent 100%);
-        }
-
-        .program-title {
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            transform: translateY(0);
-            transition: all 0.5s ease;
-        }
-
-        .program-desc {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
-        }
-
-        .program-card:hover .program-desc {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .program-icon {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 3.5rem;
-            height: 3.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
+        .program-icon-box {
+            width: 48px;
+            /* REVISI: Icon box diperkecil */
+            height: 48px;
+            background: #fff7ed;
+            color: var(--brand-orange);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            transition: all 0.5s ease;
-        }
-
-        .program-card:hover .program-icon {
-            background: white;
-            color: var(--brand-orange);
-            transform: rotate(360deg);
-        }
-
-        /* Section Kontak - Design modern dengan split layout */
-        .contact-card {
-            background: white;
-            border-radius: 2rem;
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
             transition: all 0.4s ease;
         }
 
-        .contact-card:hover {
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            background: #f8fafc;
-            border-radius: 1.25rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .contact-item:hover {
-            background: #fef3e7;
-            transform: translateX(10px);
-        }
-
-        .contact-icon {
-            width: 3.5rem;
-            height: 3.5rem;
-            background: linear-gradient(135deg, #f47200, #ff8c00);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-
-        .contact-form {
-            background: linear-gradient(135deg, #f47200, #ff8c00);
-            border-radius: 2rem;
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(244, 114, 0, 0.3);
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid transparent;
-            border-radius: 1rem;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: white;
-            background: white;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-input::placeholder {
-            color: #94a3b8;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: white;
-            color: var(--brand-orange);
-            border: none;
-            border-radius: 1rem;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Footer - Simpel dan clean */
-        .footer-simple {
-            background: #0f172a;
-            padding: 3rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .footer-logo-icon {
-            width: 2.5rem;
-            height: 2.5rem;
+        .program-modern-card:hover .program-icon-box {
             background: var(--brand-orange);
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: white;
+            transform: rotate(10deg);
         }
 
-        .footer-links {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .footer-link {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .footer-link:hover {
-            color: var(--brand-orange);
-        }
-
-        .footer-copyright {
+        /* --- CONTACT STYLES (COMPACT) --- */
+        .contact-action-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            /* REVISI: Padding diperkecil */
             text-align: center;
-            color: #475569;
-            font-size: 0.85rem;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        /* Carousel Navigation Dots */
-        .carousel-dots {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 0.75rem;
-            z-index: 20;
-        }
-
-        .carousel-dot {
-            width: 0.75rem;
-            height: 0.75rem;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        .carousel-dot.active {
+        .contact-action-card:hover {
+            transform: scale(1.03);
+            border-color: var(--brand-orange);
+            box-shadow: 0 15px 30px rgba(244, 114, 0, 0.15);
+        }
+
+        .contact-big-icon {
+            width: 60px;
+            /* REVISI: Icon diperkecil */
+            height: 60px;
+            background: #f8fafc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            color: #334155;
+            margin-bottom: 1rem;
+            transition: all 0.4s ease;
+        }
+
+        .contact-action-card:hover .contact-big-icon {
             background: var(--brand-orange);
-            width: 2rem;
-            border-radius: 1rem;
+            color: white;
         }
 
-        /* Responsive */
+        /* --- RESPONSIVE ADJUSTMENTS --- */
         @media (max-width: 768px) {
-            .hero-stats {
-                flex-direction: column;
-                gap: 1rem;
+            .timeline-vertical-line {
+                left: 20px;
             }
 
-            .timeline-line {
-                display: none;
+            .timeline-row {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 2rem;
             }
 
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
+            .timeline-row:nth-child(odd) .timeline-content-wrapper,
+            .timeline-row:nth-child(even) .timeline-content-wrapper {
+                width: 100%;
+                margin: 0;
+                padding: 0 0 0 45px;
+                justify-content: flex-start;
             }
 
-            .footer-links {
-                flex-direction: column;
-                gap: 1rem;
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .timeline-card {
+                width: 100%;
+                max-width: 100%;
+                padding: 1.25rem;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
             }
         }
     </style>
 @endsection
 
 @section('content')
-    <nav class="glass-nav fixed w-full">
-        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
+    <nav class="glass-nav fixed w-full top-0 left-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
             <div class="flex items-center space-x-3">
                 @if ($pengaturan && $pengaturan->logo)
                     <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="nav-logo-img">
@@ -548,23 +389,25 @@
                 @endif
                 <div class="hidden md:block">
                     <span
-                        class="text-white font-extrabold text-base block leading-none uppercase">{{ $pengaturan->nama_pesantren ?? 'Al-Badru' }}</span>
-                    <span class="text-[9px] text-orange-400 font-bold tracking-widest uppercase mt-1 block">Portal Seleksi
+                        class="text-white font-extrabold text-sm block leading-none uppercase">{{ $pengaturan->nama_pesantren ?? 'Al-Badru' }}</span>
+                    <span class="text-[9px] text-orange-400 font-bold tracking-widest uppercase mt-0.5 block">Portal Seleksi
                         Digital</span>
                 </div>
             </div>
 
-            <div class="hidden lg:flex items-center space-x-8">
-                <a href="#alur" class="text-sm font-semibold text-gray-300 hover:text-white transition">Alur</a>
-                <a href="#program" class="text-sm font-semibold text-gray-300 hover:text-white transition">Program</a>
-                <a href="#kontak" class="text-sm font-semibold text-gray-300 hover:text-white transition">Kontak</a>
+            <div class="hidden lg:flex items-center space-x-6"> <a href="#alur"
+                    class="text-xs font-semibold text-gray-300 hover:text-white transition uppercase tracking-wide">Alur</a>
+                <a href="#program"
+                    class="text-xs font-semibold text-gray-300 hover:text-white transition uppercase tracking-wide">Program</a>
+                <a href="#kontak"
+                    class="text-xs font-semibold text-gray-300 hover:text-white transition uppercase tracking-wide">Hubungi</a>
                 @auth
                     <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('pendaftar.dashboard') }}"
-                        class="btn-hero">Dashboard</a>
+                        class="btn-hero text-xs">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}"
-                        class="text-sm font-semibold text-white hover:text-orange-400 transition">Masuk</a>
-                    <a href="{{ route('register') }}" class="btn-hero">Daftar</a>
+                        class="text-xs font-semibold text-white hover:text-orange-400 transition uppercase tracking-wide">Masuk</a>
+                    <a href="{{ route('register') }}" class="btn-hero text-xs">Daftar</a>
                 @endauth
             </div>
         </div>
@@ -594,266 +437,277 @@
         </div>
         <div class="dark-overlay"></div>
 
-        @if (isset($banners) && $banners->count() > 1)
-            <div class="carousel-dots">
-                @foreach ($banners as $index => $banner)
-                    <div class="carousel-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
-                @endforeach
-            </div>
-        @endif
-
         <div class="hero-content">
-            <div class="reveal active">
-                <span class="hero-badge">
-                    Pendaftaran Santri Baru {{ date('Y') }}
-                </span>
+            <div class="reveal active text-center md:text-left">
+                <div
+                    class="inline-block px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/30 text-orange-400 text-[10px] font-bold tracking-widest uppercase mb-4 backdrop-blur-sm">
+                    Penerimaan Santri Baru {{ date('Y') }}/{{ date('Y') + 1 }}
+                </div>
                 <h1 class="hero-title">
-                    Membangun Generasi Rabbani<br>
-                    Melalui Seleksi <span class="text-orange-500">Objektif & Digital</span>
+                    Pendidikan Adab <br>
+                    & Teknologi Terdepan
                 </h1>
-                <p class="hero-desc">
-                    Wujudkan pendidikan terbaik dengan sistem pendaftaran transparan dan akurat menggunakan metode SMART
-                    untuk menjaring calon santri unggulan.
+                <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mb-6 mx-auto md:mx-0">
+                    Bergabunglah bersama kami untuk mencetak generasi Qurani yang tidak hanya hafal Al-Qur'an,
+                    tetapi juga menguasai sains dan teknologi masa depan.
                 </p>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('register') }}" class="btn-hero">
+                <div class="flex flex-col md:flex-row gap-3 justify-center md:justify-start">
+                    <a href="{{ route('register') }}" class="btn-hero justify-center">
                         Daftar Sekarang
-                        <i class="fas fa-arrow-right text-sm"></i>
+                        <i class="fas fa-chevron-right text-[10px]"></i>
                     </a>
-                    <a href="#alur" class="btn-hero-outline">
-                        Lihat Mekanisme
+                    <a href="#alur" class="btn-hero-outline justify-center">
+                        Pelajari Alur
                     </a>
-                </div>
-
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <h3>{{ $pengaturan->jumlah_santri ?? '0' }}+</h3>
-                        <p>Santri Aktif</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>{{ $pengaturan->jumlah_guru ?? '0' }}</h3>
-                        <p>Pengajar</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>100%</h3>
-                        <p>Transparan</p>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="alur" class="py-24 bg-gradient-to-br from-slate-50 to-orange-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-slate-900 text-4xl font-black mb-4">Alur Pendaftaran</h2>
-                <p class="text-slate-600">Empat langkah mudah untuk bergabung menjadi bagian dari kami</p>
+    <section id="alur" class="py-16 timeline-section">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 reveal">
+                <h2 class="text-slate-900 text-3xl font-black mb-3">Alur Pendaftaran</h2>
+                <p class="text-slate-600 text-sm md:text-base">Ikuti langkah mudah berikut untuk menjadi bagian dari
+                    keluarga besar kami.</p>
             </div>
 
-            <div class="timeline-container">
-                <div class="timeline-line hidden md:block"></div>
-                <div class="grid md:grid-cols-4 gap-8">
-                    <div class="timeline-step">
-                        <div class="timeline-number">1</div>
-                        <h3 class="text-slate-900 text-xl font-bold mb-3 text-center">Registrasi</h3>
-                        <p class="text-sm text-slate-600 text-center leading-relaxed">
-                            Buat akun pendaftar menggunakan email aktif melalui portal resmi
-                        </p>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="timeline-number">2</div>
-                        <h3 class="text-slate-900 text-xl font-bold mb-3 text-center">Data Profil</h3>
-                        <p class="text-sm text-slate-600 text-center leading-relaxed">
-                            Lengkapi identitas diri dan unggah berkas persyaratan digital
-                        </p>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="timeline-number">3</div>
-                        <h3 class="text-slate-900 text-xl font-bold mb-3 text-center">Ujian Tes</h3>
-                        <p class="text-sm text-slate-600 text-center leading-relaxed">
-                            Ikuti rangkaian ujian akademik dan wawancara sesuai jadwal
-                        </p>
-                    </div>
-                    <div class="timeline-step">
-                        <div class="timeline-number">4</div>
-                        <h3 class="text-slate-900 text-xl font-bold mb-3 text-center">Hasil Seleksi</h3>
-                        <p class="text-sm text-slate-600 text-center leading-relaxed">
-                            Pengumuman kelulusan objektif berdasarkan perangkingan SMART
-                        </p>
+            <div class="relative">
+                <div class="timeline-vertical-line"></div>
+
+                <div class="timeline-row reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content-wrapper">
+                        <div class="timeline-card">
+                            <div class="timeline-step-num">01</div>
+                            <div class="timeline-info">
+                                <h3 class="text-lg font-bold text-slate-900 mb-2">Registrasi Akun</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Buat akun pada portal resmi menggunakan email aktif.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <div class="timeline-row reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content-wrapper">
+                        <div class="timeline-card">
+                            <div class="timeline-step-num">02</div>
+                            <div class="timeline-info">
+                                <h3 class="text-lg font-bold text-slate-900 mb-2">Lengkapi Biodata</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Isi formulir data diri dan upload berkas persyaratan digital.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-row reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content-wrapper">
+                        <div class="timeline-card">
+                            <div class="timeline-step-num">03</div>
+                            <div class="timeline-info">
+                                <h3 class="text-lg font-bold text-slate-900 mb-2">Ujian Seleksi</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Ikuti tes akademik dan wawancara sesuai jadwal.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-row reveal">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content-wrapper">
+                        <div class="timeline-card">
+                            <div class="timeline-step-num">04</div>
+                            <div class="timeline-info">
+                                <h3 class="text-lg font-bold text-slate-900 mb-2">Pengumuman</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Hasil seleksi diumumkan di portal. Lakukan daftar ulang jika lolos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section id="program" class="py-24 bg-white">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
-                <div class="max-w-xl">
-                    <h2 class="text-slate-900 text-4xl font-black mb-4">Program Unggulan</h2>
-                    <p class="text-slate-600">Integrasi ilmu syar'i dan kompetensi teknologi untuk generasi masa depan</p>
+    <section id="program" class="py-16 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-4 reveal">
+                <div>
+                    <h2 class="text-slate-900 text-3xl font-black mb-2">Program Pendidikan</h2>
+                    <p class="text-slate-600 text-sm">Kurikulum terintegrasi dunia dan akhirat.</p>
                 </div>
                 <a href="#"
-                    class="text-sm font-bold text-orange-600 hover:text-orange-700 transition flex items-center gap-2">
-                    Semua Program
-                    <i class="fas fa-arrow-right text-xs"></i>
+                    class="group flex items-center gap-2 text-sm font-bold text-orange-600 hover:text-orange-700">
+                    Selengkapnya
+                    <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
                 </a>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="program-card">
-                    <div class="program-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600" class="program-image"
-                            alt="Tahfidz Quran">
-                        <div class="program-icon">
-                            <i class="fas fa-quran"></i>
-                        </div>
-                        <div class="program-overlay">
-                            <h3 class="program-title">Tahfidz Quran</h3>
-                            <p class="program-desc">
-                                Metode menghafal intensif dengan target capaian yang terukur setiap semester
-                            </p>
-                        </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="program-modern-card reveal">
+                    <div class="program-icon-box">
+                        <i class="fas fa-quran"></i>
                     </div>
-                </div>
-
-                <div class="program-card">
-                    <div class="program-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600" class="program-image"
-                            alt="Literasi Digital">
-                        <div class="program-icon">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                        <div class="program-overlay">
-                            <h3 class="program-title">Literasi Digital</h3>
-                            <p class="program-desc">
-                                Penguasaan desain grafis, multimedia, dan dasar pemrograman komputer
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="program-card">
-                    <div class="program-image-wrapper">
-                        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600"
-                            class="program-image" alt="Bahasa Global">
-                        <div class="program-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <div class="program-overlay">
-                            <h3 class="program-title">Bahasa Global</h3>
-                            <p class="program-desc">
-                                Penerapan komunikasi aktif Bahasa Arab dan Inggris sebagai bekal dakwah global
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="kontak" class="py-24 bg-gradient-to-br from-slate-50 to-orange-50">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 class="text-slate-900 text-4xl font-black mb-6">
-                        Hubungi Layanan<br>Informasi
-                    </h2>
-                    <p class="text-slate-600 mb-10">
-                        Admin kami siap melayani pertanyaan seputar prosedur seleksi santri baru
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Tahfidz Intensif</h3>
+                    <p class="text-slate-600 text-sm mb-4 flex-grow">
+                        Program unggulan menghafal Al-Qur'an 30 Juz dengan metode mutqin.
                     </p>
-
-                    <div class="space-y-6">
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-phone-alt"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-400 uppercase">WhatsApp</p>
-                                <p class="text-lg font-bold text-slate-800">{{ $pengaturan->telepon ?? '-' }}</p>
-                            </div>
-                        </div>
-
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-400 uppercase">Email Support</p>
-                                <p class="text-lg font-bold text-slate-800">{{ $pengaturan->email ?? '-' }}</p>
-                            </div>
-                        </div>
-
-                        <div class="contact-item">
-                            <div class="contact-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-400 uppercase">Alamat</p>
-                                <p class="text-sm font-semibold text-slate-800">{{ $pengaturan->alamat ?? '-' }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <ul class="space-y-1.5 w-full">
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Target 30 Juz
+                        </li>
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Sertifikat Sanad
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="contact-form">
-                    <h3 class="text-2xl font-bold text-white mb-6">Kirim Pesan</h3>
-                    <form class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder="Nama Lengkap" class="form-input">
-                            <input type="email" placeholder="Email" class="form-input">
-                        </div>
-                        <input type="text" placeholder="Subjek" class="form-input">
-                        <textarea rows="4" placeholder="Pesan Anda..." class="form-input"></textarea>
-                        <button type="submit" class="btn-submit">
-                            Kirim Pesan
-                            <i class="fas fa-paper-plane ml-2"></i>
-                        </button>
-                    </form>
+                <div class="program-modern-card reveal">
+                    <div class="program-icon-box">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">IT & Coding</h3>
+                    <p class="text-slate-600 text-sm mb-4 flex-grow">
+                        Pembekalan skill Web Development, Desain Grafis, dan dasar AI.
+                    </p>
+                    <ul class="space-y-1.5 w-full">
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Fullstack Web
+                        </li>
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Lab Komputer
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="program-modern-card reveal">
+                    <div class="program-icon-box">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Bahasa Asing</h3>
+                    <p class="text-slate-600 text-sm mb-4 flex-grow">
+                        Wajib berbahasa Arab dan Inggris dalam percakapan sehari-hari.
+                    </p>
+                    <ul class="space-y-1.5 w-full">
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Native Speaker
+                        </li>
+                        <li class="flex items-center text-xs text-slate-500">
+                            <i class="fas fa-check text-green-500 mr-2"></i> Public Speaking
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="footer-simple">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <div class="footer-logo-icon">
-                        <i class="fas fa-mosque"></i>
+    <section id="kontak" class="py-16 bg-slate-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-10 reveal">
+                <span class="text-orange-600 font-bold tracking-wider uppercase text-xs mb-1 block">Pusat Bantuan</span>
+                <h2 class="text-slate-900 text-3xl font-black mb-3">Hubungi Kami</h2>
+                <p class="text-slate-600 text-sm">Tim kami siap membantu Anda.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <a href="https://wa.me/{{ $pengaturan->telepon ?? '' }}" target="_blank"
+                    class="contact-action-card reveal">
+                    <div class="contact-big-icon">
+                        <i class="fab fa-whatsapp"></i>
                     </div>
-                    <div>
-                        <span
-                            class="text-white font-bold text-lg block">{{ $pengaturan->nama_pesantren ?? 'Al-Badru' }}</span>
-                        <span class="text-slate-400 text-xs">Portal Seleksi Digital</span>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">WhatsApp</h3>
+                    <p class="text-slate-500 mb-2 text-xs">Chat cepat dengan admin</p>
+                    <span class="text-orange-600 font-bold text-sm">{{ $pengaturan->telepon ?? '0812-xxxx-xxxx' }}</span>
+                </a>
+
+                <a href="mailto:{{ $pengaturan->email ?? '' }}" class="contact-action-card reveal">
+                    <div class="contact-big-icon">
+                        <i class="far fa-envelope"></i>
                     </div>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">Email</h3>
+                    <p class="text-slate-500 mb-2 text-xs">Pertanyaan formal</p>
+                    <span
+                        class="text-orange-600 font-bold text-sm">{{ $pengaturan->email ?? 'info@pesantren.com' }}</span>
+                </a>
+
+                <a href="#" class="contact-action-card reveal">
+                    <div class="contact-big-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">Lokasi</h3>
+                    <p class="text-slate-500 mb-2 text-xs">Lihat peta</p>
+                    <span
+                        class="text-orange-600 font-bold text-xs px-2 line-clamp-1">{{ $pengaturan->alamat ?? 'Bandung, Indonesia' }}</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#0f172a] pt-12 pb-6 border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-10">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        @if ($pengaturan && $pengaturan->logo)
+                            <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo"
+                                class="h-8 w-auto object-contain">
+                        @else
+                            <i class="fas fa-mosque text-orange-500 text-2xl"></i>
+                        @endif
+                        <div>
+                            <span
+                                class="text-white font-extrabold text-base block leading-none uppercase">{{ $pengaturan->nama_pesantren ?? 'Al-Badru' }}</span>
+                            <span
+                                class="text-[10px] text-slate-400 font-medium tracking-widest uppercase mt-0.5 block">Portal
+                                Seleksi Digital</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-sm leading-relaxed max-w-sm">
+                        Mewujudkan pendidikan Islam yang berkualitas, modern, dan beradab.
+                    </p>
                 </div>
 
-                <div class="footer-links">
-                    <a href="#beranda" class="footer-link">Beranda</a>
-                    <a href="#alur" class="footer-link">Alur</a>
-                    <a href="#program" class="footer-link">Program</a>
-                    <a href="#kontak" class="footer-link">Kontak</a>
-                    <a href="{{ route('login') }}" class="footer-link">Login</a>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-4">Navigasi</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#beranda" class="text-slate-400 hover:text-orange-500 transition">Beranda</a></li>
+                        <li><a href="#alur" class="text-slate-400 hover:text-orange-500 transition">Alur</a></li>
+                        <li><a href="#program" class="text-slate-400 hover:text-orange-500 transition">Program</a></li>
+                        <li><a href="{{ route('login') }}"
+                                class="text-slate-400 hover:text-orange-500 transition">Login</a></li>
+                    </ul>
                 </div>
 
-                <div class="flex gap-4">
-                    <a href="#"
-                        class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:bg-orange-500 hover:text-white transition">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#"
-                        class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:bg-orange-500 hover:text-white transition">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#"
-                        class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:bg-orange-500 hover:text-white transition">
-                        <i class="fab fa-youtube"></i>
-                    </a>
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-4">Sosial Media</h4>
+                    <div class="flex gap-3">
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-orange-600 hover:text-white transition-all">
+                            <i class="fab fa-facebook-f text-xs"></i>
+                        </a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all">
+                            <i class="fab fa-instagram text-xs"></i>
+                        </a>
+                        <a href="#"
+                            class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-all">
+                            <i class="fab fa-youtube text-xs"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="footer-copyright">
+            <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-xs">
                 &copy; {{ date('Y') }} {{ $pengaturan->nama_pesantren ?? 'Al-Badru' }}. All Rights Reserved.
             </div>
         </div>
@@ -862,50 +716,38 @@
 
 @section('scripts')
     <script>
-        // Hero Carousel dengan support untuk video
-        const slides = document.querySelectorAll('.hero-slide');
-        const dots = document.querySelectorAll('.carousel-dot');
-        let currentSlide = 0;
-        const slideCount = slides.length;
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- LOGIC NAVBAR TRANSPARAN VS SCROLLED ---
+            const navbar = document.querySelector('.glass-nav');
 
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-
-            slides[index].classList.add('active');
-            if (dots[index]) dots[index].classList.add('active');
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % slideCount;
-            showSlide(currentSlide);
-        }
-
-        // Auto-play carousel setiap 5 detik
-        if (slideCount > 1) {
-            setInterval(nextSlide, 5000);
-        }
-
-        // Manual navigation via dots
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentSlide = index;
-                showSlide(currentSlide);
-            });
-        });
-
-        // Smooth scroll untuk navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+            function handleScroll() {
+                const triggerPoint = window.innerHeight - 80;
+                if (window.scrollY > triggerPoint) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
                 }
-            });
+            }
+
+            window.addEventListener('scroll', handleScroll);
+            handleScroll();
+
+            // --- CAROUSEL LOGIC ---
+            const slides = document.querySelectorAll('.hero-slide');
+            if (slides.length > 0) {
+                let currentSlide = 0;
+                const slideCount = slides.length;
+
+                function nextSlide() {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slideCount;
+                    slides[currentSlide].classList.add('active');
+                }
+
+                if (slideCount > 1) {
+                    setInterval(nextSlide, 5000);
+                }
+            }
         });
     </script>
 @endsection

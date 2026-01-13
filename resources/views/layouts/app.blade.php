@@ -63,9 +63,9 @@
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
         });
-
-        @yield('scripts')
     </script>
+
+    @yield('scripts')
 </body>
 
 </html>
