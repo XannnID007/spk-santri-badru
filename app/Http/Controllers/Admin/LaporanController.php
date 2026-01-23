@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Periode;
 use App\Models\Pendaftaran;
 use App\Models\Perhitungan;
+use App\Models\Pengaturan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -19,7 +21,13 @@ class LaporanController extends Controller
     public function laporanPendaftaran(Request $request)
     {
         $periodeId = $request->get('periode_id');
+
+        if (!$periodeId) {
+            return redirect()->back()->with('error', 'Silakan pilih periode terlebih dahulu!');
+        }
+
         $periode = Periode::findOrFail($periodeId);
+        $pengaturan = Pengaturan::first();
 
         $pendaftarans = Pendaftaran::with(['pengguna.profil', 'periode'])
             ->where('periode_id', $periodeId)
@@ -38,8 +46,9 @@ class LaporanController extends Controller
             'totalPendaftar',
             'verified',
             'pending',
-            'rejected'
-        ));
+            'rejected',
+            'pengaturan'
+        ))->setPaper('a4', 'landscape');
 
         return $pdf->download('laporan-pendaftaran-' . $periode->nama_periode . '.pdf');
     }
@@ -47,7 +56,13 @@ class LaporanController extends Controller
     public function laporanHasilSeleksi(Request $request)
     {
         $periodeId = $request->get('periode_id');
+
+        if (!$periodeId) {
+            return redirect()->back()->with('error', 'Silakan pilih periode terlebih dahulu!');
+        }
+
         $periode = Periode::findOrFail($periodeId);
+        $pengaturan = Pengaturan::first();
 
         $hasil = Perhitungan::whereHas('pendaftaran', function ($query) use ($periodeId) {
             $query->where('periode_id', $periodeId);
@@ -65,20 +80,21 @@ class LaporanController extends Controller
             'hasil',
             'totalDiterima',
             'totalCadangan',
-            'totalDitolak'
-        ));
+            'totalDitolak',
+            'pengaturan'
+        ))->setPaper('a4', 'landscape');
 
         return $pdf->download('laporan-hasil-seleksi-' . $periode->nama_periode . '.pdf');
     }
 
     public function exportExcel(Request $request)
     {
-        // Implementasi export Excel bisa menggunakan Laravel Excel
-        // Untuk saat ini return JSON sebagai placeholder
+        // Implementasi export Excel menggunakan Laravel Excel
+        // Install dulu: composer require maatwebsite/excel
 
         return response()->json([
-            'success' => true,
-            'message' => 'Export Excel akan segera tersedia'
-        ]);
+            'success' => false,
+            'message' => 'Fitur Export Excel dalam pengembangan. Gunakan format PDF terlebih dahulu.'
+        ], 501);
     }
 }

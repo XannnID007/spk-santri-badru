@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Pendaftar;
 use App\Models\Profil;
 use App\Models\Periode;
 use App\Models\Pendaftaran;
+use App\Models\Pengaturan;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendaftaranController extends Controller
 {
@@ -102,7 +104,15 @@ class PendaftaranController extends Controller
             ->where('pengguna_id', Auth::id())
             ->firstOrFail();
 
-        $pdf = Pdf::loadView('pendaftar.kartu-ujian', compact('pendaftaran'));
-        return $pdf->download('kartu-ujian-' . $pendaftaran->no_pendaftaran . '.pdf');
+        $pengaturan = Pengaturan::first();
+
+        session()->save();
+
+        $pdf = Pdf::loadView('pendaftar.kartu-ujian', compact('pendaftaran', 'pengaturan'))
+            ->setPaper('a4', 'portrait');
+
+        // Menggunakan stream untuk preview di browser/iframe
+        // Jika menggunakan download(), file akan langsung terunduh dan tidak bisa di-preview di modal
+        return $pdf->stream('kartu-ujian-' . $pendaftaran->no_pendaftaran . '.pdf');
     }
 }

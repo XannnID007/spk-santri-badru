@@ -3,39 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Kartu Peserta Ujian - {{ $pendaftaran->no_pendaftaran }}</title>
     <style>
         /* Reset & Base */
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            /* Padding dihilangkan karena diatur oleh @page */
             background-color: #fff;
             color: #000;
+            font-size: 12pt;
         }
 
-        /* Container Kartu */
+        /* Container Kartu - Border dihapus untuk PDF clean, border bisa diatur di content */
         .card {
             width: 100%;
-            max-width: 700px;
-            /* Ukuran lebar standar kertas A4 potrait margin */
-            margin: 0 auto;
             border: 2px solid #000;
             padding: 20px;
-            position: relative;
+            box-sizing: border-box;
+            /* Penting agar padding tidak melebarkan width */
         }
 
         /* Header */
         .header {
             width: 100%;
             border-bottom: 3px double #000;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
 
         .header-table {
             width: 100%;
+            border: none;
         }
 
         .logo-cell {
@@ -55,24 +56,24 @@
         }
 
         .institution-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             text-transform: uppercase;
             margin: 0;
         }
 
         .institution-address {
-            font-size: 12px;
+            font-size: 11px;
             margin: 5px 0 0 0;
         }
 
         /* Title */
         .card-title {
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-transform: uppercase;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-decoration: underline;
         }
 
@@ -80,18 +81,18 @@
         .content-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         /* Photo Section */
         .photo-cell {
-            width: 140px;
+            width: 3.5cm;
             vertical-align: top;
-            padding-right: 20px;
+            padding-right: 15px;
         }
 
         .photo-box {
             width: 3cm;
-            /* Ukuran 3x4 cm */
             height: 4cm;
             border: 1px solid #000;
             display: block;
@@ -102,11 +103,11 @@
             width: 3cm;
             height: 4cm;
             border: 1px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
+            display: table-cell;
+            /* Hack untuk vertical align text di div statis pdf */
+            vertical-align: middle;
             text-align: center;
+            font-size: 10px;
             background: #f0f0f0;
         }
 
@@ -117,11 +118,12 @@
 
         .info-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
         .info-table td {
-            padding: 5px 0;
-            font-size: 14px;
+            padding: 4px 0;
+            font-size: 13px;
             vertical-align: top;
         }
 
@@ -141,7 +143,7 @@
 
         /* Footer / Tanda Tangan */
         .footer {
-            margin-top: 40px;
+            margin-top: 30px;
             width: 100%;
         }
 
@@ -150,20 +152,21 @@
         }
 
         .qr-cell {
-            width: 50%;
+            width: 60%;
             vertical-align: bottom;
             font-size: 10px;
             color: #555;
         }
 
         .signature-cell {
-            width: 50%;
+            width: 40%;
             text-align: center;
             vertical-align: top;
+            font-size: 12px;
         }
 
         .signature-space {
-            height: 70px;
+            height: 60px;
         }
 
         .signer-name {
@@ -173,54 +176,32 @@
 
         /* Notes */
         .notes {
-            margin-top: 30px;
+            margin-top: 20px;
             border: 1px dashed #555;
             padding: 10px;
-            font-size: 11px;
+            font-size: 10px;
             background-color: #fafafa;
         }
 
         .notes h4 {
             margin: 0 0 5px 0;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .notes ul {
             margin: 0;
-            padding-left: 20px;
+            padding-left: 15px;
         }
 
-        /* Print Settings */
-        @media print {
-            body {
-                background: none;
-                -webkit-print-color-adjust: exact;
-            }
-
-            .no-print {
-                display: none;
-            }
-
-            .card {
-                border: none;
-                /* Hilangkan border luar saat print agar bersih */
-            }
+        /* Page Break Prevention */
+        tr {
+            page-break-inside: avoid;
         }
     </style>
 </head>
 
-<body onload="window.print()">
-
-    <div class="no-print" style="margin-bottom: 20px; text-align: center;">
-        <button onclick="window.history.back()"
-            style="padding: 10px 20px; background: #333; color: #fff; border: none; cursor: pointer; border-radius: 5px;">
-            &larr; Kembali
-        </button>
-        <button onclick="window.print()"
-            style="padding: 10px 20px; background: #ea580c; color: #fff; border: none; cursor: pointer; border-radius: 5px; margin-left: 10px;">
-            Cetak Kartu
-        </button>
-    </div>
+<body>
+    {{-- HAPUS TOMBOL PRINT & BACK KARENA INI PDF --}}
 
     <div class="card">
         <div class="header">
@@ -228,20 +209,27 @@
                 <tr>
                     <td class="logo-cell">
                         @php
-                            // Menggunakan public_path agar bisa dibaca oleh DOMPDF jika nanti di-convert
-                            // Jika hanya browser print, asset() sudah cukup.
-                            $logoPath = $pengaturan->logo
-                                ? asset('storage/' . $pengaturan->logo)
-                                : 'https://via.placeholder.com/70';
+                            // FIX: Gunakan public_path() agar DomPDF membaca file lokal, bukan URL HTTP
+                            // Ini mencegah loading macet/timeout di localhost
+                            $logoPath = null;
+                            if ($pengaturan->logo && file_exists(public_path('storage/' . $pengaturan->logo))) {
+                                $logoPath = public_path('storage/' . $pengaturan->logo);
+                            }
                         @endphp
-                        <img src="{{ $logoPath }}" alt="Logo" class="logo">
+
+                        @if ($logoPath)
+                            <img src="{{ $logoPath }}" alt="Logo" class="logo">
+                        @else
+                            {{-- Fallback jika logo tidak ditemukan --}}
+                            <div style="font-weight:bold; border:1px solid #000; padding:5px;">LOGO</div>
+                        @endif
                     </td>
                     <td class="text-cell">
                         <h1 class="institution-name">{{ $pengaturan->nama_pesantren ?? 'Pondok Pesantren Al-Badru' }}
                         </h1>
                         <p class="institution-address">
-                            {{ $pengaturan->alamat ?? 'Alamat Pesantren Belum Diatur' }} <br>
-                            Telp: {{ $pengaturan->telepon ?? '-' }} | Email: {{ $pengaturan->email ?? '-' }}
+                            {{ $pengaturan->alamat_lengkap ?? 'Alamat Pesantren Belum Diatur' }} <br>
+                            Telp: {{ $pengaturan->no_telp ?? '-' }} | Email: {{ $pengaturan->email ?? '-' }}
                         </p>
                     </td>
                 </tr>
@@ -253,9 +241,18 @@
         <table class="content-table">
             <tr>
                 <td class="photo-cell">
-                    @if ($pendaftaran->pengguna->profil && $pendaftaran->pengguna->profil->foto)
-                        <img src="{{ asset('storage/' . $pendaftaran->pengguna->profil->foto) }}" alt="Foto Peserta"
-                            class="photo-box">
+                    @php
+                        $fotoPath = null;
+                        if ($pendaftaran->pengguna->profil && $pendaftaran->pengguna->profil->foto) {
+                            $path = public_path('storage/' . $pendaftaran->pengguna->profil->foto);
+                            if (file_exists($path)) {
+                                $fotoPath = $path;
+                            }
+                        }
+                    @endphp
+
+                    @if ($fotoPath)
+                        <img src="{{ $fotoPath }}" alt="Foto Peserta" class="photo-box">
                     @else
                         <div class="photo-placeholder">
                             FOTO 3x4
@@ -268,14 +265,16 @@
                         <tr>
                             <td class="label">No. Pendaftaran</td>
                             <td class="separator">:</td>
-                            <td class="value" style="font-size: 16px; font-weight: bold;">
-                                {{ $pendaftaran->no_pendaftaran }}</td>
+                            <td class="value" style="font-size: 14px; font-weight: bold;">
+                                {{ $pendaftaran->no_pendaftaran }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="label">Nama Lengkap</td>
                             <td class="separator">:</td>
                             <td class="value" style="text-transform: uppercase;">
-                                {{ $pendaftaran->pengguna->profil->nama_lengkap ?? $pendaftaran->pengguna->nama }}</td>
+                                {{ $pendaftaran->pengguna->profil->nama_lengkap ?? $pendaftaran->pengguna->nama }}
+                            </td>
                         </tr>
                         <tr>
                             <td class="label">NISN / NIK</td>
@@ -311,11 +310,13 @@
                     <td class="qr-cell">
                         <div style="border: 1px solid #ccc; padding: 5px; display: inline-block;">
                             <span
-                                style="font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; letter-spacing: 2px;">
+                                style="font-family: monospace; font-size: 14px; font-weight: bold; letter-spacing: 2px;">
                                 {{ $pendaftaran->no_pendaftaran }}
                             </span>
                         </div>
-                        <p style="margin-top: 5px;">Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
+                        <p style="margin-top: 5px; font-style: italic;">
+                            Dicetak otomatis oleh sistem pada: {{ now()->format('d/m/Y H:i') }}
+                        </p>
                     </td>
                     <td class="signature-cell">
                         <p>Kota Cimahi, {{ now()->format('d F Y') }}</p>
@@ -330,16 +331,14 @@
         <div class="notes">
             <h4>TATA TERTIB UJIAN:</h4>
             <ul>
-                <li>Kartu ini wajib dibawa saat pelaksanaan tes seleksi (Ujian Tulis & Wawancara).</li>
+                <li>Kartu ini wajib dibawa (dicetak) saat pelaksanaan tes seleksi (Ujian Tulis & Wawancara).</li>
                 <li>Peserta wajib hadir 30 menit sebelum ujian dimulai.</li>
                 <li>Berpakaian rapi, sopan, dan menutup aurat (busana muslim/muslimah).</li>
                 <li>Membawa alat tulis sendiri (Pensil 2B, Penghapus, Pulpen Hitam).</li>
                 <li>Dilarang membawa alat komunikasi ke dalam ruang ujian.</li>
             </ul>
         </div>
-
     </div>
-
 </body>
 
 </html>

@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pendaftaran;
 use App\Models\Perhitungan;
 use App\Models\Periode;
-use App\Models\Kriteria;
 use App\Models\Pengaturan;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 // Dashboard Admin Controller
 class DashboardAdminController extends Controller

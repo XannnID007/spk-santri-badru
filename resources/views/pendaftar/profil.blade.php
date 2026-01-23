@@ -21,8 +21,11 @@
 
         <div class="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100 overflow-hidden">
 
+            {{-- Form ID digunakan oleh JS --}}
             <form id="profilForm" enctype="multipart/form-data">
                 @csrf
+                {{-- Method PUT hanya dirender jika profil sudah ada --}}
+                {{-- FormData di JS akan otomatis mengambil input hidden ini --}}
                 @if ($profil)
                     @method('PUT')
                 @endif
@@ -60,7 +63,7 @@
                                     class="mt-3 w-full py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-50 transition">
                                     Pilih Foto
                                 </button>
-                                <p class="text-[10px] text-slate-400 mt-2 text-center">Format: JPG/PNG, Max 2MB. Wajah
+                                <p class="text-[10px] text-slate-400 mt-2 text-center">Format: JPG/PNG, Max 1MB. Wajah
                                     terlihat jelas.</p>
                             </div>
                         </div>
@@ -259,11 +262,8 @@
 
 @section('scripts')
     <script>
-        // Ambil token
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // Preview Image Logic
-        function previewImage(input) {
+        // Menggunakan window.previewImage agar bisa diakses oleh atribut onchange di HTML
+        window.previewImage = function(input) {
             const preview = document.getElementById('preview-foto');
             const placeholder = document.getElementById('placeholder-foto');
 
@@ -276,65 +276,116 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             }
-        }
+        };
 
-        // Handle Submit
-        document.getElementById('profilForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Bungkus dalam DOMContentLoaded untuk memastikan elemen HTML sudah siap sebelum script dijalankan
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debugging: Cek apakah script berjalan
+            console.log("Script Profil dimuat");
 
-            // Loading State
-            Swal.fire({
-                title: 'Menyimpan...',
-                text: 'Mohon tunggu sebentar',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
+            // Ambil elemen form
+            const form = document.getElementById('profilForm');
+            if (!form) {
+                console.error("Form profilForm tidak ditemukan!");
+                return;
+            }
 
-            const formData = new FormData(this);
-            // Tentukan URL berdasarkan apakah profil sudah ada atau belum
-            const url = @json($profil ? route('pendaftar.profil.update') : route('pendaftar.profil.store'));
+            // Ambil token CSRF dengan aman
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
 
-            // Jika update, tambahkan _method PUT jika belum ada (meskipun sudah di blade)
-            @if ($profil)
-                formData.append('_method', 'PUT');
-            @endif
+            // Handle Submit
+            form.addEventListener('submit', async function(e) {
+                // INI YANG PALING PENTING: Mencegah refresh halaman
+                e.preventDefault();
+                console.log("Tombol submit diklik, default prevented.");
 
-            try {
-                const response = await fetch(url, {
-                    method: 'POST', // Gunakan POST dengan _method override
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
+                // Cek apakah SweetAlert tersedia
+                if (typeof Swal === 'undefined') {
+                    alert("Library SweetAlert tidak dimuat! Hubungi admin.");
+                    return;
+                }
+
+                // Loading State
+                Swal.fire({
+                    title: 'Menyimpan...',
+                    text: 'Mohon tunggu sebentar',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
                 });
 
-                const data = await response.json();
+                const formData = new FormData(this);
+                // URL Tujuan
+                const url =
+                    "{{ $profil ? route('pendaftar.profil.update') : route('pendaftar.profil.store') }}";
 
-                if (response.ok && data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: data.message,
-                        confirmButtonColor: '#f97316',
-                        customClass: {
-                            popup: 'rounded-2xl',
-                            confirmButton: 'rounded-xl'
-                        }
-                    }).then(() => {
-                        window.location.href = '{{ route('pendaftar.dashboard') }}';
+                console.log('Mengirim ke:', url);
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST', // Selalu POST karena FormData + _method field
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: formData
                     });
-                } else {
-                    // Handle Validation Errors
-                    let errorMessage = data.message || 'Terjadi kesalahan';
-                    if (data.errors) {
-                        const firstError = Object.values(data.errors)[0][0];
-                        errorMessage = firstError;
+
+                    // Cek Content-Type respons
+                    const contentType = response.headers.get("content-type");
+                    let data;
+
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        data = await response.json();
+                    } else {
+                        // Jika server error (500) dan mengembalikan HTML/Teks
+                        const text = await response.text();
+                        console.error("Respons Server bukan JSON:", text);
+                        throw new Error(
+                            "Terjadi kesalahan server (500). Kemungkinan data tidak sesuai struktur database."
+                        );
                     }
+
+                    if (response.ok && data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            confirmButtonColor: '#f97316',
+                            customClass: {
+                                popup: 'rounded-2xl',
+                                confirmButton: 'rounded-xl'
+                            }
+                        }).then(() => {
+                            window.location.href = '{{ route('pendaftar.dashboard') }}';
+                        });
+                    } else {
+                        // Handle Error Validasi
+                        console.error('Error Data:', data);
+                        let errorMessage = data.message || 'Terjadi kesalahan saat menyimpan data.';
+
+                        if (data.errors) {
+                            const firstErrorKey = Object.keys(data.errors)[0];
+                            errorMessage = data.errors[firstErrorKey][0];
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: errorMessage,
+                            confirmButtonColor: '#f97316',
+                            customClass: {
+                                popup: 'rounded-2xl',
+                                confirmButton: 'rounded-xl'
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Gagal',
-                        text: errorMessage,
+                        title: 'Error Sistem',
+                        text: error.message || 'Terjadi kesalahan koneksi.',
                         confirmButtonColor: '#f97316',
                         customClass: {
                             popup: 'rounded-2xl',
@@ -342,19 +393,7 @@
                         }
                     });
                 }
-            } catch (error) {
-                console.error(error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
-                    confirmButtonColor: '#f97316',
-                    customClass: {
-                        popup: 'rounded-2xl',
-                        confirmButton: 'rounded-xl'
-                    }
-                });
-            }
+            });
         });
     </script>
 @endsection

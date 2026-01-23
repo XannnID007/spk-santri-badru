@@ -49,10 +49,12 @@
                     </div>
 
                     @if ($pendaftaran->status_verifikasi === 'diterima')
-                        <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}" target="_blank"
-                            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20">
-                            <i class="fas fa-print mr-2"></i> Cetak Kartu Ujian
-                        </a>
+                        {{-- Button Trigger Modal --}}
+                        <button onclick="openPdfModal('{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}')"
+                            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 group">
+                            <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                            Lihat & Cetak Kartu Ujian
+                        </button>
                     @else
                         <button disabled
                             class="inline-flex items-center px-6 py-3 bg-slate-100 text-slate-400 rounded-xl font-bold cursor-not-allowed">
@@ -172,92 +174,229 @@
             </div>
         @endif
     </div>
+
+    {{-- MODAL PREVIEW PDF (Dipindah ke Stack 'modals') --}}
+    @push('modals')
+        <div id="pdfModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+
+            <div class="fixed inset-0 z-[101] overflow-y-auto">
+                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                    <!-- Modal Panel -->
+                    <div id="modalPanel"
+                        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl opacity-0 scale-95">
+
+                        <!-- Header -->
+                        <div class="bg-white px-4 py-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <span
+                                    class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm">
+                                    <i class="fas fa-id-card"></i>
+                                </span>
+                                Preview Kartu Ujian
+                            </h3>
+                            <button type="button" onclick="closePdfModal()"
+                                class="text-slate-400 hover:text-slate-500 hover:bg-slate-100 rounded-lg w-8 h-8 flex items-center justify-center transition">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        <!-- Body (Iframe) -->
+                        <div class="relative bg-slate-100 h-[70vh]">
+                            {{-- Loading Indicator --}}
+                            <div id="pdfLoading"
+                                class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 z-0">
+                                <i class="fas fa-spinner fa-spin text-3xl text-blue-500 mb-2"></i>
+                                <p class="text-sm font-medium">Memuat Kartu Ujian...</p>
+                                <p class="text-xs text-slate-400 mt-2 font-medium bg-white/50 px-3 py-1 rounded-full">Mohon
+                                    jangan refresh halaman selama proses ini.</p>
+                            </div>
+                            {{-- Iframe --}}
+                            {{-- FIX: Tambah class bg-white agar menutupi loader jika onload gagal --}}
+                            <iframe id="pdfFrame" class="w-full h-full relative z-10 bg-white" src=""
+                                frameborder="0" onload="hidePdfLoading()"></iframe>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="bg-slate-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 gap-3 border-t border-slate-100">
+                            <a id="btnDownloadPdf" href="#" target="_blank"
+                                class="inline-flex w-full justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 sm:w-auto gap-2 items-center">
+                                <i class="fas fa-download"></i> Download PDF
+                            </a>
+                            <button type="button" onclick="closePdfModal()"
+                                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endpush
 @endsection
 
 @section('scripts')
     <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // === MODAL LOGIC ===
+        function openPdfModal(url) {
+            const modal = document.getElementById('pdfModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+            const frame = document.getElementById('pdfFrame');
+            const downloadBtn = document.getElementById('btnDownloadPdf');
+            const loading = document.getElementById('pdfLoading');
 
-        @if (!$pendaftaran)
-            document.getElementById('pendaftaranForm').addEventListener('submit', async function(e) {
-                e.preventDefault();
+            // Reset Loading
+            loading.classList.remove('hidden');
 
-                const pernyataan = document.getElementById('pernyataan');
-                if (!pernyataan.checked) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Pernyataan Belum Disetujui',
-                        text: 'Silakan centang kotak pernyataan untuk melanjutkan.',
-                        confirmButtonColor: '#f97316',
-                        customClass: {
-                            popup: 'rounded-2xl',
-                            confirmButton: 'rounded-xl'
-                        }
-                    });
-                    return;
-                }
+            // Set URL - Tambahkan timestamp untuk mencegah cache browser yang bisa bikin stuck
+            // Cache busting: menambahkan ?t=123123123 di akhir URL
+            frame.src = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
-                const submitBtn = document.getElementById('submitBtn');
-                const originalBtnContent = submitBtn.innerHTML;
+            downloadBtn.href = url;
 
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            // Show Modal Container
+            modal.classList.remove('hidden');
 
-                const formData = new FormData(this);
+            // Animate In (Sedikit delay agar transisi CSS jalan)
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'scale-95');
+                panel.classList.add('opacity-100', 'scale-100');
+            }, 50);
 
-                try {
-                    const response = await fetch('{{ route('pendaftar.pendaftaran.store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: formData
-                    });
+            // FALLBACK PENTING:
+            // Banyak browser modern tidak menjalankan event 'onload' untuk PDF di iframe.
+            // Kita paksa hilangkan loader setelah 3 detik agar user tidak melihat loading selamanya.
+            setTimeout(() => {
+                hidePdfLoading();
+            }, 3000);
+        }
 
-                    const data = await response.json();
+        function closePdfModal() {
+            const modal = document.getElementById('pdfModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+            const frame = document.getElementById('pdfFrame');
 
-                    if (data.success) {
+            // Animate Out
+            backdrop.classList.add('opacity-0');
+            panel.classList.remove('opacity-100', 'scale-100');
+            panel.classList.add('opacity-0', 'scale-95');
+
+            // Hide Modal Container after animation
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                frame.src = ''; // Clear iframe agar stop loading/playing
+            }, 300);
+        }
+
+        function hidePdfLoading() {
+            const loading = document.getElementById('pdfLoading');
+            if (loading) {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Close on Backdrop Click
+        const backdrop = document.getElementById('modalBackdrop');
+        if (backdrop) {
+            backdrop.addEventListener('click', closePdfModal);
+        }
+
+        // === EXISTING LOGIC ===
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cek token
+            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+
+            // 2. Script Form Pendaftaran (Hanya jika form ada)
+            const form = document.getElementById('pendaftaranForm');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault(); // Mencegah refresh halaman
+                    console.log("Submit Pendaftaran...");
+
+                    const pernyataan = document.getElementById('pernyataan');
+                    if (!pernyataan.checked) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Pendaftaran Berhasil!',
-                            html: `<p class="text-sm text-slate-600">${data.message}</p>
-                               <div class="mt-4 p-3 bg-slate-100 rounded-lg border border-slate-200">
-                                 <span class="text-xs text-slate-500 uppercase font-bold">No. Pendaftaran</span><br>
-                                 <span class="text-xl font-mono font-bold text-orange-600">${data.no_pendaftaran}</span>
-                               </div>`,
-                            confirmButtonText: 'Lihat Status',
-                            confirmButtonColor: '#f97316',
-                            allowOutsideClick: false,
-                            customClass: {
-                                popup: 'rounded-2xl',
-                                confirmButton: 'rounded-xl'
-                            }
-                        }).then(() => {
-                            window.location.reload();
+                            icon: 'warning',
+                            title: 'Pernyataan Belum Disetujui',
+                            text: 'Silakan centang kotak pernyataan untuk melanjutkan.',
+                            confirmButtonColor: '#f97316'
                         });
-                    } else {
-                        throw new Error(data.message || 'Terjadi kesalahan saat memproses data.');
+                        return;
                     }
-                } catch (error) {
-                    console.error(error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Mengirim',
-                        text: error.message || 'Terjadi kesalahan sistem. Silakan coba lagi.',
-                        confirmButtonColor: '#f97316',
-                        customClass: {
-                            popup: 'rounded-2xl',
-                            confirmButton: 'rounded-xl'
-                        }
-                    });
 
-                    // Reset Button
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
-                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-                }
-            });
-        @endif
+                    const submitBtn = document.getElementById('submitBtn');
+                    const originalBtnContent = submitBtn.innerHTML;
+
+                    // Disable tombol
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+                    const formData = new FormData(this);
+
+                    try {
+                        const response = await fetch('{{ route('pendaftar.pendaftaran.store') }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json' // Penting agar server mengembalikan JSON
+                            },
+                            body: formData
+                        });
+
+                        // Cek tipe konten respons
+                        const contentType = response.headers.get("content-type");
+                        let data;
+
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            data = await response.json();
+                        } else {
+                            // Jika respons bukan JSON (misal error 500 HTML)
+                            const text = await response.text();
+                            console.error("Non-JSON Response:", text);
+                            throw new Error("Terjadi kesalahan server (500).");
+                        }
+
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pendaftaran Berhasil!',
+                                html: `<p class="text-sm text-slate-600">${data.message}</p>
+                                   <div class="mt-4 p-3 bg-slate-100 rounded-lg border border-slate-200">
+                                     <span class="text-xs text-slate-500 uppercase font-bold">No. Pendaftaran</span><br>
+                                     <span class="text-xl font-mono font-bold text-orange-600">${data.no_pendaftaran}</span>
+                                   </div>`,
+                                confirmButtonText: 'Lihat Status',
+                                confirmButtonColor: '#f97316',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            throw new Error(data.message || 'Terjadi kesalahan saat memproses data.');
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Mengirim',
+                            text: error.message ||
+                                'Terjadi kesalahan sistem. Silakan coba lagi.',
+                            confirmButtonColor: '#f97316'
+                        });
+
+                        // Reset Button jika gagal
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnContent;
+                        submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    }
+                });
+            }
+        });
     </script>
 @endsection

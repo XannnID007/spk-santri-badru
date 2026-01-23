@@ -7,6 +7,7 @@ use App\Models\Pendaftaran;
 use App\Models\Perhitungan;
 use App\Models\Kriteria;
 use App\Models\NilaiTes;
+use App\Models\Pengaturan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,10 +17,10 @@ class PengumumanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Ambil pendaftaran user
         $pendaftaran = Pendaftaran::where('pengguna_id', $user->pengguna_id)->first();
-        
+
         if (!$pendaftaran) {
             return redirect()->route('pendaftar.dashboard')
                 ->with('error', 'Anda belum melakukan pendaftaran!');
@@ -40,7 +41,7 @@ class PengumumanController extends Controller
         // Ambil detail nilai per kriteria
         $kriterias = Kriteria::where('status_aktif', true)->get();
         $nilaiDetails = [];
-        
+
         foreach ($kriterias as $kriteria) {
             if ($kriteria->kode_kriteria === 'C3') {
                 // Untuk ekonomi, ambil dari profil
@@ -51,7 +52,7 @@ class PengumumanController extends Controller
                     ->first();
                 $nilai = $nilaiTes ? $nilaiTes->nilai : 0;
             }
-            
+
             $nilaiDetails[] = [
                 'kriteria' => $kriteria->nama_kriteria,
                 'nilai' => $nilai,
@@ -83,7 +84,13 @@ class PengumumanController extends Controller
             abort(403);
         }
 
-        $pdf = Pdf::loadView('pendaftar.surat-keputusan', compact('perhitungan'));
-        return $pdf->download('surat-keputusan-' . $perhitungan->pendaftaran->no_pendaftaran . '.pdf');
+        $pendaftaran = $perhitungan->pendaftaran;
+        $pengaturan = Pengaturan::first();
+        $pengumuman = $perhitungan;
+
+        $pdf = Pdf::loadView('pendaftar.surat-keputusan', compact('perhitungan', 'pendaftaran', 'pengaturan', 'pengumuman'))
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->download('surat-keputusan-' . $pendaftaran->no_pendaftaran . '.pdf');
     }
 }

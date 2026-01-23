@@ -12,7 +12,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -329,6 +329,9 @@
         @csrf
     </form>
 
+    {{-- Stack untuk Modal agar tidak tertindih --}}
+    @stack('modals')
+
     <script>
         // Global Script Setup
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -366,14 +369,13 @@
 
         // --- FUNGSI LOGOUT GLOBAL ---
         window.confirmLogout = function() {
-            // Debugging: Cek apakah fungsi terpanggil
             console.log('Tombol logout diklik');
 
             Swal.fire({
                 title: 'Keluar dari Sesi?',
                 text: "Anda harus login kembali untuk mengakses halaman ini.",
                 icon: 'question',
-                iconColor: '#f97316', // Orange
+                iconColor: '#f97316',
                 showCancelButton: true,
                 confirmButtonColor: '#f97316',
                 cancelButtonColor: '#cbd5e1',
@@ -388,7 +390,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Cari form dan submit
                     const form = document.getElementById('logout-form');
                     if (form) {
                         form.submit();

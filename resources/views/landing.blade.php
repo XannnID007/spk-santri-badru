@@ -89,8 +89,8 @@
 
         .hero-title {
             color: #ffffff !important;
-            font-size: clamp(1.5rem, 5vw, 4rem);
-            font-weight: 600;
+            font-size: clamp(1.5rem, 4vw, 4rem);
+            font-weight: 700;
             line-height: 1.1;
             margin-bottom: 1.5rem;
         }
@@ -491,11 +491,11 @@
 
                 <div class="flex justify-center md:justify-end reveal delay-100">
                     <div class="about-frame">
-                        <img src="images/jalan_sehat.jpg" alt="Pimpinan Pondok">
+                        <img src="images/pimpinan.jpeg" alt="Pimpinan Pondok">
                         <div
                             class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-center">
-                            <h4 class="text-white font-bold text-sm">Santri Al-Badru</h4>
-                            <span class="text-orange-400 text-xs uppercase tracking-wide"><i>_Xannn</i></span>
+                            <h4 class="text-white font-bold text-sm">Pimpinan Pondok</h4>
+                            <span class="text-orange-400 text-xs uppercase tracking-wide"><i>KH. Cucun Suntani</i></span>
                         </div>
                     </div>
                 </div>

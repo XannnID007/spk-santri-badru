@@ -15,6 +15,17 @@ use App\Http\Controllers\Admin\KelolaPeriodeController;
 use App\Http\Controllers\Admin\KelolaPengaturanController;
 use App\Http\Controllers\Admin\LaporanController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
 // Landing Page
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
@@ -28,14 +39,17 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+// ====================================================
 // Pendaftar Routes
+// Prefix: /pendaftar | Name: pendaftar.
+// ====================================================
 Route::middleware(['auth', 'role:pendaftar'])->prefix('pendaftar')->name('pendaftar.')->group(function () {
     Route::get('/dashboard', [DashboardPendaftarController::class, 'index'])->name('dashboard');
 
-    // Profil
-    Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
-    Route::post('/profil', [ProfilController::class, 'store'])->name('profil.store');
-    Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+    // Profil (Logic: GET=View, POST=Create, PUT=Update)
+    Route::get('/profil', [ProfilController::class, 'index'])->name('profil'); // pendaftar.profil
+    Route::post('/profil', [ProfilController::class, 'store'])->name('profil.store'); // pendaftar.profil.store
+    Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update'); // pendaftar.profil.update
 
     // Pendaftaran
     Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran');
@@ -47,7 +61,10 @@ Route::middleware(['auth', 'role:pendaftar'])->prefix('pendaftar')->name('pendaf
     Route::get('/download-sk/{id}', [PengumumanController::class, 'downloadSK'])->name('download-sk');
 });
 
+// ====================================================
 // Admin Routes
+// Prefix: /admin | Name: admin.
+// ====================================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
 
@@ -66,10 +83,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/perhitungan/tentukan-kelulusan', [KelolaPerhitunganController::class, 'tentukanKelulusan'])->name('perhitungan.tentukan-kelulusan');
     Route::post('/perhitungan/publish', [KelolaPerhitunganController::class, 'publishPengumuman'])->name('perhitungan.publish');
 
-    // Kelola Kriteria
+    // Kelola Kriteria (Resource)
     Route::resource('kriteria', KelolaKriteriaController::class);
 
-    // Kelola Periode
+    // Kelola Periode (Resource + Custom)
     Route::resource('periode', KelolaPeriodeController::class);
     Route::put('/periode/{id}/toggle-status', [KelolaPeriodeController::class, 'toggleStatus'])->name('periode.toggle-status');
 
