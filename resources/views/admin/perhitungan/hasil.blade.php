@@ -5,7 +5,7 @@
 @section('content')
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.perhitungan') }}"
+            <a href="{{ route('admin.perhitungan') }}?periode_id={{ $periode->periode_id }}"
                 class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-orange-600 hover:border-orange-200 transition shadow-sm">
                 <i class="fas fa-arrow-left"></i>
             </a>
@@ -53,12 +53,13 @@
             <h3 class="text-xl font-bold text-slate-800 mb-2">Belum Ada Hasil</h3>
             <p class="text-slate-500 text-sm mb-6 max-w-md mx-auto">Data perhitungan belum tersedia untuk periode ini.
                 Silakan lakukan proses hitung terlebih dahulu.</p>
-            <a href="{{ route('admin.perhitungan') }}"
+            <a href="{{ route('admin.perhitungan') }}?periode_id={{ $periode->periode_id }}"
                 class="inline-flex items-center px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-orange-600/20">
                 <i class="fas fa-play mr-2"></i> Mulai Perhitungan
             </a>
         </div>
     @else
+        {{-- STATISTIK --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div
                 class="bg-white p-5 rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex items-center justify-between">
@@ -108,6 +109,7 @@
             </div>
         </div>
 
+        {{-- TABEL HASIL --}}
         <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -130,10 +132,24 @@
                         @foreach ($hasil as $h)
                             <tr class="hover:bg-slate-50/50 transition group">
                                 <td class="py-4 px-6 text-center">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center font-bold mx-auto text-sm">
-                                        {{ $h->ranking }}
-                                    </div>
+                                    @if ($h->ranking <= 3)
+                                        @php
+                                            $colors = [
+                                                1 => 'bg-yellow-100 border-yellow-300 text-yellow-700',
+                                                2 => 'bg-slate-200 border-slate-400 text-slate-700',
+                                                3 => 'bg-amber-100 border-amber-300 text-amber-700',
+                                            ];
+                                        @endphp
+                                        <div
+                                            class="w-8 h-8 rounded-full {{ $colors[$h->ranking] ?? 'bg-slate-100 border-slate-200 text-slate-600' }} border-2 flex items-center justify-center font-bold mx-auto text-sm">
+                                            {{ $h->ranking }}
+                                        </div>
+                                    @else
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-600 flex items-center justify-center font-bold mx-auto text-sm">
+                                            {{ $h->ranking }}
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <td class="py-4 px-6">
@@ -153,30 +169,33 @@
                                 </td>
 
                                 <td class="py-4 px-6 text-center">
-                                    <span
-                                        class="text-lg font-bold text-slate-700">{{ number_format($h->nilai_akhir * 100, 2) }}</span>
+                                    <div class="flex flex-col items-center">
+                                        <span
+                                            class="text-lg font-bold text-slate-700">{{ number_format($h->nilai_akhir * 100, 2) }}</span>
+                                        <span class="text-[10px] text-slate-400">dari 100</span>
+                                    </div>
                                 </td>
 
                                 <td class="py-4 px-6 text-center">
                                     @if ($h->status_kelulusan === 'diterima')
                                         <span
                                             class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                            Diterima
+                                            <i class="fas fa-check-circle mr-1"></i> Diterima
                                         </span>
                                     @elseif($h->status_kelulusan === 'cadangan')
                                         <span
                                             class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-100">
-                                            Cadangan
+                                            <i class="fas fa-clock mr-1"></i> Cadangan
                                         </span>
                                     @elseif($h->status_kelulusan === 'tidak_diterima')
                                         <span
                                             class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">
-                                            Tidak Lulus
+                                            <i class="fas fa-times-circle mr-1"></i> Tidak Lulus
                                         </span>
                                     @else
                                         <span
                                             class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-400 border border-slate-200">
-                                            -
+                                            <i class="fas fa-minus mr-1"></i> Belum Ditentukan
                                         </span>
                                     @endif
                                 </td>
@@ -188,6 +207,7 @@
         </div>
     @endif
 
+    {{-- MODAL TENTUKAN KELULUSAN --}}
     <div id="modalKelulusan" class="fixed inset-0 z-[100] hidden items-center justify-center px-4">
         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"
             onclick="closeModalKelulusan()"></div>
@@ -202,6 +222,7 @@
 
             <form id="formKelulusan" onsubmit="submitKelulusan(event)">
                 <div class="p-6 space-y-6">
+                    {{-- Pilih Metode --}}
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-3">Pilih Metode Penentuan</label>
                         <div class="grid grid-cols-2 gap-4">
@@ -209,67 +230,90 @@
                                 <input type="radio" name="metode" value="ranking" class="peer sr-only" checked
                                     onchange="toggleMetode()">
                                 <div
-                                    class="p-3 rounded-xl border border-slate-200 bg-white text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition">
+                                    class="p-3 rounded-xl border-2 border-slate-200 bg-white text-center peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition">
+                                    <i class="fas fa-sort-numeric-down text-xl mb-1"></i>
                                     <span class="text-sm font-bold block">Ranking</span>
-                                    <span class="text-[10px] text-slate-400">Berdasarkan kuota urutan</span>
+                                    <span class="text-[10px] text-slate-400">Berdasarkan urutan</span>
                                 </div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="metode" value="passing_grade" class="peer sr-only"
                                     onchange="toggleMetode()">
                                 <div
-                                    class="p-3 rounded-xl border border-slate-200 bg-white text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 transition">
+                                    class="p-3 rounded-xl border-2 border-slate-200 bg-white text-center peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 transition">
+                                    <i class="fas fa-percentage text-xl mb-1"></i>
                                     <span class="text-sm font-bold block">Passing Grade</span>
-                                    <span class="text-[10px] text-slate-400">Berdasarkan batas nilai</span>
+                                    <span class="text-[10px] text-slate-400">Berdasarkan nilai</span>
                                 </div>
                             </label>
                         </div>
                     </div>
 
+                    {{-- Info Total Peserta --}}
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 flex justify-between items-center">
+                        <span class="text-sm text-blue-800 font-medium">Total Peserta:</span>
+                        <span class="text-xl font-bold text-blue-900">{{ $hasil->count() }}</span>
+                    </div>
+
+                    {{-- Method Ranking --}}
                     <div id="rankingMethod" class="space-y-4">
-                        <div
-                            class="bg-blue-50 p-3 rounded-lg border border-blue-100 flex justify-between items-center text-sm text-blue-800">
-                            <span>Total Peserta:</span>
-                            <span class="font-bold">{{ $hasil->count() }}</span>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">
+                                <i class="fas fa-medal text-emerald-500 mr-1"></i> Batas Ranking Diterima
+                            </label>
+                            <input type="number" name="batas_lulus_ranking" min="1" max="{{ $hasil->count() }}"
+                                class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
+                                placeholder="Contoh: 50 (Ranking 1-50 Lulus)">
+                            <p class="text-[10px] text-slate-400 mt-1">Pendaftar dengan ranking 1 sampai nilai ini akan
+                                <strong>DITERIMA</strong></p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Batas Ranking Diterima</label>
-                            <input type="number" name="batas_lulus_ranking"
-                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition"
-                                placeholder="Misal: 50 (Ranking 1-50 Lulus)">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Batas Ranking Cadangan</label>
-                            <input type="number" name="batas_cadangan_ranking"
-                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition"
-                                placeholder="Misal: 70 (Ranking 51-70 Cadangan)">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">
+                                <i class="fas fa-clock text-amber-500 mr-1"></i> Batas Ranking Cadangan
+                            </label>
+                            <input type="number" name="batas_cadangan_ranking" min="1"
+                                max="{{ $hasil->count() }}"
+                                class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
+                                placeholder="Contoh: 70 (Ranking 51-70 Cadangan)">
+                            <p class="text-[10px] text-slate-400 mt-1">Ranking setelah batas lulus sampai nilai ini akan
+                                menjadi <strong>CADANGAN</strong></p>
                         </div>
                     </div>
 
+                    {{-- Method Passing Grade --}}
                     <div id="passingGradeMethod" class="space-y-4 hidden">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Nilai Minimal Diterima
-                                (0-100)</label>
-                            <input type="number" name="batas_lulus_grade" step="0.01" max="100"
-                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition"
-                                placeholder="Misal: 75">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">
+                                <i class="fas fa-check-circle text-emerald-500 mr-1"></i> Nilai Minimal Diterima (0-100)
+                            </label>
+                            <input type="number" name="batas_lulus_grade" step="0.01" min="0" max="100"
+                                class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
+                                placeholder="Contoh: 75">
+                            <p class="text-[10px] text-slate-400 mt-1">Nilai ≥ ini akan <strong>DITERIMA</strong></p>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Nilai Minimal Cadangan
-                                (0-100)</label>
-                            <input type="number" name="batas_cadangan_grade" step="0.01" max="100"
-                                class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition"
-                                placeholder="Misal: 60">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">
+                                <i class="fas fa-hourglass-half text-amber-500 mr-1"></i> Nilai Minimal Cadangan (0-100)
+                            </label>
+                            <input type="number" name="batas_cadangan_grade" step="0.01" min="0"
+                                max="100"
+                                class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
+                                placeholder="Contoh: 60">
+                            <p class="text-[10px] text-slate-400 mt-1">Nilai antara ini dan batas lulus akan menjadi
+                                <strong>CADANGAN</strong></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="px-6 pb-6 flex gap-3">
                     <button type="button" onclick="closeModalKelulusan()"
-                        class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition">Batal</button>
+                        class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition">
+                        <i class="fas fa-times mr-1"></i> Batal
+                    </button>
                     <button type="submit"
-                        class="flex-1 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition shadow-lg shadow-orange-600/20">Simpan
-                        & Terapkan</button>
+                        class="flex-1 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition shadow-lg shadow-orange-600/20">
+                        <i class="fas fa-check mr-1"></i> Simpan & Terapkan
+                    </button>
                 </div>
             </form>
         </div>
@@ -283,7 +327,7 @@
         const backdrop = document.getElementById('modalBackdrop');
         const content = document.getElementById('modalContent');
 
-        // --- MODAL FUNCTIONS ---
+        // MODAL FUNCTIONS
         window.openModalKelulusan = function() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -304,19 +348,28 @@
             }, 300);
         }
 
-        // --- TOGGLE METHOD ---
+        // TOGGLE METHOD
         window.toggleMetode = function() {
             const metode = document.querySelector('input[name="metode"]:checked').value;
+            const rankingMethod = document.getElementById('rankingMethod');
+            const passingGradeMethod = document.getElementById('passingGradeMethod');
+
             if (metode === 'ranking') {
-                document.getElementById('rankingMethod').classList.remove('hidden');
-                document.getElementById('passingGradeMethod').classList.add('hidden');
+                rankingMethod.classList.remove('hidden');
+                passingGradeMethod.classList.add('hidden');
+                // Reset passing grade inputs
+                document.querySelector('input[name="batas_lulus_grade"]').value = '';
+                document.querySelector('input[name="batas_cadangan_grade"]').value = '';
             } else {
-                document.getElementById('rankingMethod').classList.add('hidden');
-                document.getElementById('passingGradeMethod').classList.remove('hidden');
+                rankingMethod.classList.add('hidden');
+                passingGradeMethod.classList.remove('hidden');
+                // Reset ranking inputs
+                document.querySelector('input[name="batas_lulus_ranking"]').value = '';
+                document.querySelector('input[name="batas_cadangan_ranking"]').value = '';
             }
         }
 
-        // --- SUBMIT KELULUSAN ---
+        // SUBMIT KELULUSAN
         window.submitKelulusan = async function(e) {
             e.preventDefault();
 
@@ -331,19 +384,85 @@
                 batasCadangan = document.querySelector('input[name="batas_cadangan_grade"]').value;
             }
 
+            // Validasi input kosong
             if (!batasLulus || !batasCadangan) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Data Kurang',
-                    text: 'Mohon isi semua batas nilai/ranking.',
+                    title: 'Data Kurang Lengkap',
+                    text: 'Mohon isi semua batas nilai/ranking yang diperlukan.',
                     confirmButtonColor: '#f97316'
                 });
                 return;
             }
 
+            // Validasi logika ranking
+            if (metode === 'ranking') {
+                const lulus = parseInt(batasLulus);
+                const cadangan = parseInt(batasCadangan);
+                const total = {{ $hasil->count() }};
+
+                if (lulus < 1 || cadangan < 1) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Input Tidak Valid',
+                        text: 'Ranking harus minimal 1',
+                        confirmButtonColor: '#f97316'
+                    });
+                    return;
+                }
+
+                if (lulus > total || cadangan > total) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Input Melebihi Total',
+                        text: `Ranking tidak boleh lebih dari ${total} (total peserta)`,
+                        confirmButtonColor: '#f97316'
+                    });
+                    return;
+                }
+
+                if (cadangan <= lulus) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Urutan Salah',
+                        text: 'Batas ranking cadangan harus lebih besar dari batas lulus',
+                        confirmButtonColor: '#f97316'
+                    });
+                    return;
+                }
+            }
+
+            // Validasi logika passing grade
+            if (metode === 'passing_grade') {
+                const lulus = parseFloat(batasLulus);
+                const cadangan = parseFloat(batasCadangan);
+
+                if (lulus < 0 || lulus > 100 || cadangan < 0 || cadangan > 100) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Nilai Tidak Valid',
+                        text: 'Nilai harus antara 0 - 100',
+                        confirmButtonColor: '#f97316'
+                    });
+                    return;
+                }
+
+                if (cadangan >= lulus) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Logika Salah',
+                        text: 'Batas nilai cadangan harus lebih kecil dari batas lulus',
+                        confirmButtonColor: '#f97316'
+                    });
+                    return;
+                }
+            }
+
             try {
                 Swal.fire({
                     title: 'Memproses...',
+                    text: 'Sedang menentukan status kelulusan',
+                    allowOutsideClick: false,
                     didOpen: () => Swal.showLoading()
                 });
 
@@ -366,8 +485,26 @@
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Berhasil',
-                        text: data.message,
+                        title: 'Berhasil!',
+                        html: `
+                            <p class="mb-3">${data.message}</p>
+                            ${data.summary ? `
+                                    <div class="text-sm bg-slate-50 p-3 rounded-lg">
+                                        <div class="flex justify-between mb-1">
+                                            <span>Diterima:</span>
+                                            <strong class="text-emerald-600">${data.summary.diterima}</strong>
+                                        </div>
+                                        <div class="flex justify-between mb-1">
+                                            <span>Cadangan:</span>
+                                            <strong class="text-amber-600">${data.summary.cadangan}</strong>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Tidak Lulus:</span>
+                                            <strong class="text-rose-600">${data.summary.tidak_diterima}</strong>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                        `,
                         confirmButtonColor: '#f97316'
                     }).then(() => {
                         closeModalKelulusan();
@@ -382,33 +519,43 @@
                     });
                 }
             } catch (error) {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Terjadi kesalahan sistem',
+                    text: 'Terjadi kesalahan sistem. Silakan coba lagi.',
                     confirmButtonColor: '#f97316'
                 });
             }
         }
 
-        // --- PUBLISH PENGUMUMAN ---
+        // PUBLISH PENGUMUMAN
         window.publishPengumuman = function() {
             Swal.fire({
                 title: 'Publish Pengumuman?',
-                text: "Setelah dipublish, santri dapat melihat hasil kelulusan mereka.",
+                html: `
+                    <p class="text-slate-600 mb-2">Setelah dipublish, santri dapat melihat hasil kelulusan mereka.</p>
+                    <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg text-sm text-amber-800">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>Perhatian:</strong> Proses ini tidak dapat dibatalkan!
+                    </div>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#1e293b',
                 cancelButtonColor: '#cbd5e1',
-                confirmButtonText: 'Ya, Publish Sekarang',
-                cancelButtonText: 'Batal'
+                confirmButtonText: '<i class="fas fa-bullhorn mr-2"></i> Ya, Publish Sekarang',
+                cancelButtonText: '<i class="fas fa-times mr-1"></i> Batal'
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     try {
                         Swal.fire({
                             title: 'Memproses...',
+                            text: 'Sedang mempublikasi pengumuman',
+                            allowOutsideClick: false,
                             didOpen: () => Swal.showLoading()
                         });
+
                         const response = await fetch(
                             '{{ route('admin.perhitungan.publish') }}?periode_id={{ $periode->periode_id }}', {
                                 method: 'POST',
@@ -417,20 +564,30 @@
                                     'X-CSRF-TOKEN': csrfToken
                                 }
                             });
+
                         const data = await response.json();
+
                         if (data.success) {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Terpublikasi',
+                                title: 'Terpublikasi!',
                                 text: data.message,
                                 confirmButtonColor: '#f97316'
                             }).then(() => location.reload());
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message,
+                                confirmButtonColor: '#f97316'
+                            });
                         }
                     } catch (error) {
+                        console.error('Error:', error);
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Gagal mempublish data',
+                            text: 'Gagal mempublikasi pengumuman',
                             confirmButtonColor: '#f97316'
                         });
                     }

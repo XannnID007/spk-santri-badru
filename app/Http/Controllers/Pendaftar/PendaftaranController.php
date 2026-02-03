@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Pendaftar;
 
 use App\Models\Profil;
 use App\Models\Periode;
-use App\Models\Pendaftaran;
 use App\Models\Pengaturan;
+use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendaftaranController extends Controller
 {
@@ -99,20 +100,29 @@ class PendaftaranController extends Controller
 
     public function cetakKartu($id)
     {
-        $pendaftaran = Pendaftaran::with(['pengguna.profil', 'periode'])
-            ->where('pendaftaran_id', $id)
-            ->where('pengguna_id', Auth::id())
-            ->firstOrFail();
+        try {
+            $pendaftaran = Pendaftaran::with(['pengguna.profil', 'periode'])
+                ->where('pendaftaran_id', $id)
+                ->where('pengguna_id', Auth::id())
+                ->firstOrFail();
 
-        $pengaturan = Pengaturan::first();
+            $pengaturan = Pengaturan::first();
 
-        session()->save();
+            // Set paper dan orientasi
+            $pdf = Pdf::loadView('pendaftar.kartu-ujian', compact('pendaftaran', 'pengaturan'))
+                ->setPaper('a4', 'portrait')
+                ->setOption('enable-local-file-access', true)
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true);
 
-        $pdf = Pdf::loadView('pendaftar.kartu-ujian', compact('pendaftaran', 'pengaturan'))
-            ->setPaper('a4', 'portrait');
+            // Return sebagai inline (stream) agar bisa ditampilkan di browser
+            return $pdf->stream('kartu-ujian-' . $pendaftaran->no_pendaftaran . '.pdf');
+        } catch (\Exception $e) {
+            // Log error untuk debugging
+            Log::error('Error generating Kartu Ujian: ' . $e->getMessage());
 
-        // Menggunakan stream untuk preview di browser/iframe
-        // Jika menggunakan download(), file akan langsung terunduh dan tidak bisa di-preview di modal
-        return $pdf->stream('kartu-ujian-' . $pendaftaran->no_pendaftaran . '.pdf');
+            // Return response error yang lebih user-friendly
+            abort(500, 'Terjadi kesalahan saat membuat kartu ujian. Silakan hubungi administrator.');
+        }
     }
 }

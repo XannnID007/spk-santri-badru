@@ -1,175 +1,318 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Data Pendaftar</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            font-size: 10pt;
-            margin: 15px;
+            font-family: "Times New Roman", Times, serif;
+            font-size: 11pt;
+            margin: 20px;
+            line-height: 1.4;
         }
-        .header {
+
+        /* HEADER FORMAL */
+        .header-formal {
+            border: 3px solid #000;
+            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
+            padding: 15px;
+            margin-bottom: 25px;
             text-align: center;
-            border-bottom: 3px double #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 16pt;
+
+        .header-formal .main-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            line-height: 1.3;
             text-transform: uppercase;
         }
-        .header p {
+
+        .header-formal .sub-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .header-formal .regulation-info {
+            font-size: 7.5pt;
             margin: 5px 0;
-            font-size: 9pt;
+            line-height: 1.3;
         }
-        .info-box {
-            background: #f3f4f6;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-left: 4px solid #ea580c;
+
+        .header-formal .bank-info {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #c00;
         }
-        .info-box table {
+
+        .header-formal .npwp-info {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 3px 0 0 0;
+        }
+
+        .header-formal .address-footer {
+            font-size: 7pt;
+            margin: 5px 0 0 0;
+            line-height: 1.2;
+        }
+
+        /* TITLE */
+        .report-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .report-title h2 {
+            margin: 0 0 5px 0;
+            text-decoration: underline;
+            font-size: 14pt;
+            text-transform: uppercase;
+        }
+
+        .report-title p {
+            margin: 0;
+            font-size: 12pt;
+        }
+
+        /* INFO TABLE */
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-table {
             width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-        .info-box td {
-            padding: 3px 0;
+
+        .info-table td {
+            padding: 5px 10px;
+            font-size: 11pt;
+            vertical-align: top;
         }
+
+        .info-table .label-cell {
+            width: 180px;
+            font-weight: normal;
+        }
+
+        .info-table .separator {
+            width: 15px;
+        }
+
+        /* DATA TABLE - FORMAL STYLE */
         table.data {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 15px;
         }
+
         table.data th {
-            background: #374151;
-            color: white;
-            padding: 8px 5px;
-            font-size: 9pt;
-            text-align: left;
             border: 1px solid #000;
-        }
-        table.data td {
-            padding: 6px 5px;
-            border: 1px solid #ddd;
-            font-size: 9pt;
-        }
-        table.data tr:nth-child(even) {
-            background: #f9fafb;
-        }
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 8pt;
+            padding: 8px 6px;
+            font-size: 10pt;
             font-weight: bold;
+            text-align: center;
+            background: #fff;
         }
-        .badge-success { background: #d1fae5; color: #065f46; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-        .footer {
-            margin-top: 30px;
+
+        table.data td {
+            border: 1px solid #000;
+            padding: 6px;
+            font-size: 10pt;
+            vertical-align: top;
+        }
+
+        table.data td.text-center {
+            text-align: center;
+        }
+
+        table.data td.text-right {
             text-align: right;
-            font-size: 9pt;
         }
-        .signature {
-            margin-top: 50px;
+
+        /* FOOTER */
+        .footer {
+            margin-top: 40px;
+        }
+
+        .footer-table {
+            width: 100%;
+        }
+
+        .signature-section {
+            text-align: center;
+        }
+
+        .signature-space {
+            height: 70px;
+        }
+
+        .signer-name {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        @media print {
+            body {
+                margin: 15px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <h1>{{ $pengaturan->nama_pesantren ?? 'Pondok Pesantren Al-Badru' }}</h1>
-        <p>{{ $pengaturan->alamat ?? '' }}</p>
-        <p>Telp: {{ $pengaturan->telepon ?? '' }} | Email: {{ $pengaturan->email ?? '' }}</p>
+    <!-- HEADER FORMAL -->
+    <div class="header-formal">
+        <div class="main-title">
+            YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+            BADRU PASIRKALIKI
+        </div>
+        <div class="sub-title">
+            KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+        </div>
+        <div class="regulation-info">
+            (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+            (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+            April-2013)<br>
+            (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+        </div>
+        <div class="bank-info">
+            (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+        </div>
+        <div class="npwp-info">
+            (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+        </div>
+        <div class="address-footer">
+            Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682 /
+            082126428817 Kode Pos
+        </div>
     </div>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="margin: 0; text-decoration: underline;">LAPORAN DATA PENDAFTAR</h2>
-        <p style="margin: 5px 0;">{{ $periode->nama_periode }}</p>
+    <!-- TITLE -->
+    <div class="report-title">
+        <h2>LAPORAN DATA PENDAFTAR</h2>
+        <p>{{ $periode->nama_periode }}</p>
     </div>
 
-    <div class="info-box">
-        <table>
+    <!-- INFO SECTION -->
+    <div class="info-section">
+        <table class="info-table">
             <tr>
-                <td style="width: 150px;"><strong>Periode Pendaftaran</strong></td>
-                <td>: {{ $periode->nama_periode }}</td>
-                <td style="width: 150px;"><strong>Tanggal Cetak</strong></td>
-                <td>: {{ now()->format('d F Y, H:i') }} WIB</td>
+                <td class="label-cell">Periode Pendaftaran</td>
+                <td class="separator">:</td>
+                <td>{{ $periode->nama_periode }}</td>
             </tr>
             <tr>
-                <td><strong>Rentang Waktu</strong></td>
-                <td>: {{ $periode->tanggal_mulai->format('d/m/Y') }} - {{ $periode->tanggal_selesai->format('d/m/Y') }}</td>
-                <td><strong>Kuota Santri</strong></td>
-                <td>: {{ $periode->kuota_santri }} Orang</td>
+                <td class="label-cell">Tanggal Cetak</td>
+                <td class="separator">:</td>
+                <td>{{ now()->format('d F Y, H:i') }} WIB</td>
             </tr>
             <tr>
-                <td><strong>Total Pendaftar</strong></td>
-                <td>: {{ $totalPendaftar }} Orang</td>
-                <td><strong>Sisa Kuota</strong></td>
-                <td>: {{ $periode->kuota_santri - $totalPendaftar }} Orang</td>
+                <td class="label-cell">Rentang Waktu Pendaftaran</td>
+                <td class="separator">:</td>
+                <td>{{ $periode->tanggal_mulai->format('d F Y') }} s/d {{ $periode->tanggal_selesai->format('d F Y') }}
+                </td>
+            </tr>
+            <tr>
+                <td class="label-cell">Kuota Santri</td>
+                <td class="separator">:</td>
+                <td>{{ $periode->kuota_santri }} Orang</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Total Pendaftar</td>
+                <td class="separator">:</td>
+                <td>{{ $totalPendaftar }} Orang</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Sisa Kuota</td>
+                <td class="separator">:</td>
+                <td>{{ $periode->kuota_santri - $totalPendaftar }} Orang</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Status Terverifikasi</td>
+                <td class="separator">:</td>
+                <td>{{ $verified }} Orang</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Status Pending</td>
+                <td class="separator">:</td>
+                <td>{{ $pending }} Orang</td>
+            </tr>
+            <tr>
+                <td class="label-cell">Status Ditolak</td>
+                <td class="separator">:</td>
+                <td>{{ $rejected }} Orang</td>
             </tr>
         </table>
     </div>
 
-    <div style="margin-bottom: 15px;">
-        <strong>Rekapitulasi Status Verifikasi:</strong><br>
-        <span class="badge badge-success">Terverifikasi: {{ $verified }}</span>
-        <span class="badge badge-warning">Pending: {{ $pending }}</span>
-        <span class="badge badge-danger">Ditolak: {{ $rejected }}</span>
-    </div>
-
+    <!-- DATA TABLE -->
     <table class="data">
         <thead>
             <tr>
-                <th style="width: 30px;">No</th>
-                <th style="width: 100px;">No. Pendaftaran</th>
+                <th style="width: 35px;">No.</th>
+                <th style="width: 110px;">No. Pendaftaran</th>
                 <th>Nama Lengkap</th>
-                <th>NIK</th>
+                <th style="width: 130px;">NIK</th>
                 <th>Asal Sekolah</th>
-                <th style="width: 70px;">Rata Nilai</th>
-                <th style="width: 90px;">Tgl Submit</th>
-                <th style="width: 80px;">Status</th>
+                <th style="width: 60px;">Rata-rata Nilai</th>
+                <th style="width: 90px;">Tanggal Submit</th>
+                <th style="width: 100px;">Status Verifikasi</th>
             </tr>
         </thead>
         <tbody>
             @forelse($pendaftarans as $index => $p)
-            <tr>
-                <td style="text-align: center;">{{ $index + 1 }}</td>
-                <td>{{ $p->no_pendaftaran }}</td>
-                <td>{{ $p->pengguna->profil->nama_lengkap ?? $p->pengguna->nama }}</td>
-                <td>{{ $p->pengguna->profil->nik ?? '-' }}</td>
-                <td>{{ $p->asal_sekolah }}</td>
-                <td style="text-align: center;">{{ $p->rata_nilai }}</td>
-                <td style="text-align: center;">{{ $p->tanggal_submit->format('d/m/Y') }}</td>
-                <td style="text-align: center;">
-                    @if($p->status_verifikasi === 'diterima')
-                        <span class="badge badge-success">Diterima</span>
-                    @elseif($p->status_verifikasi === 'pending')
-                        <span class="badge badge-warning">Pending</span>
-                    @else
-                        <span class="badge badge-danger">Ditolak</span>
-                    @endif
-                </td>
-            </tr>
+                <tr>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td>{{ $p->no_pendaftaran }}</td>
+                    <td>{{ $p->pengguna->profil->nama_lengkap ?? $p->pengguna->nama }}</td>
+                    <td class="text-center">{{ $p->pengguna->profil->nik ?? '-' }}</td>
+                    <td>{{ $p->asal_sekolah }}</td>
+                    <td class="text-center">{{ $p->rata_nilai }}</td>
+                    <td class="text-center">{{ $p->tanggal_submit->format('d/m/Y') }}</td>
+                    <td class="text-center">
+                        @if ($p->status_verifikasi === 'diterima')
+                            Terverifikasi
+                        @elseif($p->status_verifikasi === 'pending')
+                            Pending
+                        @else
+                            Ditolak
+                        @endif
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="8" style="text-align: center; padding: 20px; color: #6b7280;">
-                    Belum ada data pendaftar untuk periode ini.
-                </td>
-            </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 20px;">
+                        Belum ada data pendaftar untuk periode ini.
+                    </td>
+                </tr>
             @endforelse
         </tbody>
     </table>
 
+    <!-- FOOTER -->
     <div class="footer">
-        <div class="signature">
-            <p>Kota Cimahi, {{ now()->format('d F Y') }}</p>
-            <p>Ketua Panitia PSB,</p>
-            <br><br><br>
-            <p><strong><u>_______________________</u></strong></p>
-        </div>
+        <table class="footer-table">
+            <tr>
+                <td style="width: 55%;"></td>
+                <td style="width: 45%;">
+                    <div class="signature-section">
+                        <p>Kota Cimahi, {{ now()->format('d F Y') }}</p>
+                        <p>Ketua Panitia PSB,</p>
+                        <div class="signature-space"></div>
+                        <p class="signer-name">_______________________</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
+
 </html>

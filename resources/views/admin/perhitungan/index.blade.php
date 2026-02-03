@@ -100,20 +100,40 @@
 
 @section('scripts')
     <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // 1. Pindahkan pengambilan CSRF ke dalam fungsi yang membutuhkannya (Lazy Loading)
+        // Agar jika meta tag bermasalah, fungsi lain (seperti loadProcess) tetap jalan.
+        function getCsrfToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        }
 
         // Auto load jika ada parameter di URL
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const periodeId = urlParams.get('periode_id');
+
             if (periodeId) {
-                document.getElementById('periodeSelect').value = periodeId;
-                document.getElementById('processMenu').classList.remove('hidden');
+                const selectEl = document.getElementById('periodeSelect');
+                if (selectEl) {
+                    selectEl.value = periodeId;
+                    const menu = document.getElementById('processMenu');
+                    if (menu) {
+                        menu.classList.remove('hidden');
+                        // Scroll otomatis ke menu
+                        menu.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
             }
         });
 
         function getSelectedPeriode() {
-            const periodeId = document.getElementById('periodeSelect').value;
+            const selectEl = document.getElementById('periodeSelect');
+            if (!selectEl) return null;
+
+            const periodeId = selectEl.value;
             if (!periodeId) {
                 Swal.fire({
                     icon: 'warning',
@@ -126,20 +146,23 @@
             return periodeId;
         }
 
+        // 2. PERBAIKAN UTAMA: Mengubah logika loadProcess
         function loadProcess() {
             const periodeId = getSelectedPeriode();
+
             if (periodeId) {
-                document.getElementById('processMenu').classList.remove('hidden');
-                // Smooth scroll ke menu
-                document.getElementById('processMenu').scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                // Kita reload halaman dengan parameter query URL.
+                // Ini memastikan logika 'DOMContentLoaded' di atas berjalan,
+                // dan state terpilih tetap ada meskipun user refresh browser.
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('periode_id', periodeId);
+                window.location.href = currentUrl.toString();
             }
         }
 
         function goToInputNilai() {
             const periodeId = getSelectedPeriode();
+            // Gunakan urlParams dari window location agar konsisten atau ambil dari select
             if (periodeId) window.location.href = `{{ route('admin.perhitungan.input-nilai') }}?periode_id=${periodeId}`;
         }
 
@@ -151,6 +174,9 @@
         function hitungSMART() {
             const periodeId = getSelectedPeriode();
             if (!periodeId) return;
+
+            // Ambil token disini agar aman
+            const token = getCsrfToken();
 
             Swal.fire({
                 title: 'Mulai Perhitungan?',
@@ -169,19 +195,24 @@
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrfToken
+                                    'X-CSRF-TOKEN': token // Gunakan token dari fungsi aman
                                 }
                             });
 
-                        if (!response.ok) throw new Error(response.statusText);
+                        if (!response.ok) {
+                            // Coba baca pesan error dari JSON response jika ada
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || response.statusText);
+                        }
+
                         return await response.json();
                     } catch (error) {
-                        Swal.showValidationMessage(`Request failed: ${error}`);
+                        Swal.showValidationMessage(`Gagal: ${error.message}`);
                     }
                 },
                 allowOutsideClick: () => !Swal.isLoading()
             }).then((result) => {
-                if (result.isConfirmed && result.value.success) {
+                if (result.isConfirmed && result.value && result.value.success) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Selesai!',

@@ -6,65 +6,69 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Kartu Peserta Ujian - {{ $pendaftaran->no_pendaftaran }}</title>
     <style>
-        /* Reset & Base */
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
-            /* Padding dihilangkan karena diatur oleh @page */
             background-color: #fff;
             color: #000;
             font-size: 12pt;
         }
 
-        /* Container Kartu - Border dihapus untuk PDF clean, border bisa diatur di content */
         .card {
             width: 100%;
             border: 2px solid #000;
             padding: 20px;
             box-sizing: border-box;
-            /* Penting agar padding tidak melebarkan width */
         }
 
-        /* Header */
-        .header {
-            width: 100%;
-            border-bottom: 3px double #000;
-            padding-bottom: 10px;
+        /* HEADER FORMAL BARU */
+        .header-formal {
+            border: 3px solid #000;
+            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
+            padding: 12px;
             margin-bottom: 20px;
-        }
-
-        .header-table {
-            width: 100%;
-            border: none;
-        }
-
-        .logo-cell {
-            width: 80px;
-            vertical-align: middle;
             text-align: center;
         }
 
-        .logo {
-            width: 70px;
-            height: auto;
-        }
-
-        .text-cell {
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .institution-name {
-            font-size: 18px;
+        .header-formal .main-title {
+            font-size: 12pt;
             font-weight: bold;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
             text-transform: uppercase;
-            margin: 0;
         }
 
-        .institution-address {
-            font-size: 11px;
-            margin: 5px 0 0 0;
+        .header-formal .sub-title {
+            font-size: 10pt;
+            font-weight: bold;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+
+        .header-formal .regulation-info {
+            font-size: 7pt;
+            margin: 4px 0;
+            line-height: 1.2;
+        }
+
+        .header-formal .bank-info {
+            font-size: 8pt;
+            font-weight: bold;
+            margin: 4px 0;
+            color: #c00;
+        }
+
+        .header-formal .npwp-info {
+            font-size: 8pt;
+            font-weight: bold;
+            margin: 3px 0 0 0;
+        }
+
+        .header-formal .address-footer {
+            font-size: 6.5pt;
+            margin: 4px 0 0 0;
+            line-height: 1.1;
         }
 
         /* Title */
@@ -77,41 +81,47 @@
             text-decoration: underline;
         }
 
-        /* Content Layout using Table */
-        .content-table {
+        /* Content Layout */
+        .content-wrapper {
+            display: table;
             width: 100%;
-            border-collapse: collapse;
             margin-bottom: 20px;
         }
 
-        /* Photo Section */
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
         .photo-cell {
-            width: 3.5cm;
+            width: 120px;
             vertical-align: top;
-            padding-right: 15px;
+            padding-right: 20px;
+            text-align: center;
         }
 
         .photo-box {
             width: 3cm;
             height: 4cm;
-            border: 1px solid #000;
+            border: 2px solid #000;
             display: block;
             object-fit: cover;
+            margin: 0 auto;
         }
 
         .photo-placeholder {
             width: 3cm;
             height: 4cm;
-            border: 1px solid #000;
-            display: table-cell;
-            /* Hack untuk vertical align text di div statis pdf */
-            vertical-align: middle;
-            text-align: center;
-            font-size: 10px;
-            background: #f0f0f0;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            background: #f9fafb;
+            margin: 0 auto;
         }
 
-        /* Data Section */
         .data-cell {
             vertical-align: top;
         }
@@ -141,7 +151,7 @@
             font-weight: normal;
         }
 
-        /* Footer / Tanda Tangan */
+        /* Footer */
         .footer {
             margin-top: 30px;
             width: 100%;
@@ -193,7 +203,6 @@
             padding-left: 15px;
         }
 
-        /* Page Break Prevention */
         tr {
             page-break-inside: avoid;
         }
@@ -201,39 +210,32 @@
 </head>
 
 <body>
-    {{-- HAPUS TOMBOL PRINT & BACK KARENA INI PDF --}}
-
     <div class="card">
-        <div class="header">
-            <table class="header-table">
-                <tr>
-                    <td class="logo-cell">
-                        @php
-                            // FIX: Gunakan public_path() agar DomPDF membaca file lokal, bukan URL HTTP
-                            // Ini mencegah loading macet/timeout di localhost
-                            $logoPath = null;
-                            if ($pengaturan->logo && file_exists(public_path('storage/' . $pengaturan->logo))) {
-                                $logoPath = public_path('storage/' . $pengaturan->logo);
-                            }
-                        @endphp
-
-                        @if ($logoPath)
-                            <img src="{{ $logoPath }}" alt="Logo" class="logo">
-                        @else
-                            {{-- Fallback jika logo tidak ditemukan --}}
-                            <div style="font-weight:bold; border:1px solid #000; padding:5px;">LOGO</div>
-                        @endif
-                    </td>
-                    <td class="text-cell">
-                        <h1 class="institution-name">{{ $pengaturan->nama_pesantren ?? 'Pondok Pesantren Al-Badru' }}
-                        </h1>
-                        <p class="institution-address">
-                            {{ $pengaturan->alamat_lengkap ?? 'Alamat Pesantren Belum Diatur' }} <br>
-                            Telp: {{ $pengaturan->no_telp ?? '-' }} | Email: {{ $pengaturan->email ?? '-' }}
-                        </p>
-                    </td>
-                </tr>
-            </table>
+        <!-- HEADER FORMAL BARU -->
+        <div class="header-formal">
+            <div class="main-title">
+                YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+                BADRU PASIRKALIKI
+            </div>
+            <div class="sub-title">
+                KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+            </div>
+            <div class="regulation-info">
+                (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+                (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+                April-2013)<br>
+                (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+            </div>
+            <div class="bank-info">
+                (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+            </div>
+            <div class="npwp-info">
+                (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+            </div>
+            <div class="address-footer">
+                Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682
+                / 082126428817 Kode Pos
+            </div>
         </div>
 
         <h2 class="card-title">KARTU PESERTA UJIAN</h2>

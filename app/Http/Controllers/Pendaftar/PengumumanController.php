@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Pendaftar;
 
-use App\Http\Controllers\Controller;
-use App\Models\Pendaftaran;
-use App\Models\Perhitungan;
 use App\Models\Kriteria;
 use App\Models\NilaiTes;
 use App\Models\Pengaturan;
+use App\Models\Pendaftaran;
+use App\Models\Perhitungan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class PengumumanController extends Controller
 {
@@ -69,28 +70,36 @@ class PengumumanController extends Controller
 
     public function downloadSK($id)
     {
-        $perhitungan = Perhitungan::with(['pendaftaran.pengguna.profil', 'pendaftaran.periode'])
-            ->where('perhitungan_id', $id)
-            ->where('is_published', true)
-            ->firstOrFail();
+        try {
+            $perhitungan = Perhitungan::with(['pendaftaran.pengguna.profil', 'pendaftaran.periode'])
+                ->where('perhitungan_id', $id)
+                ->where('is_published', true)
+                ->firstOrFail();
 
-        // Hanya yang diterima yang bisa download SK
-        if ($perhitungan->status_kelulusan !== 'diterima') {
-            return redirect()->back()->with('error', 'Surat Keputusan hanya tersedia untuk yang diterima!');
+            // Hanya yang diterima yang bisa download SK
+            if ($perhitungan->status_kelulusan !== 'diterima') {
+                return redirect()->back()->with('error', 'Surat Keputusan hanya tersedia untuk yang diterima!');
+            }
+
+            // Cek apakah user yang download adalah pemilik
+            if ($perhitungan->pendaftaran->pengguna_id !== Auth::id()) {
+                abort(403, 'Anda tidak memiliki akses ke surat keputusan ini.');
+            }
+
+            $pendaftaran = $perhitungan->pendaftaran;
+            $pengaturan = Pengaturan::first();
+            $pengumuman = $perhitungan;
+
+            $pdf = Pdf::loadView('pendaftar.surat-keputusan', compact('perhitungan', 'pendaftaran', 'pengaturan', 'pengumuman'))
+                ->setPaper('a4', 'portrait')
+                ->setOption('enable-local-file-access', true)
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true);
+
+            return $pdf->download('surat-keputusan-' . $pendaftaran->no_pendaftaran . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Error generating Surat Keputusan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuat surat keputusan: ' . $e->getMessage());
         }
-
-        // Cek apakah user yang download adalah pemilik
-        if ($perhitungan->pendaftaran->pengguna_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $pendaftaran = $perhitungan->pendaftaran;
-        $pengaturan = Pengaturan::first();
-        $pengumuman = $perhitungan;
-
-        $pdf = Pdf::loadView('pendaftar.surat-keputusan', compact('perhitungan', 'pendaftaran', 'pengaturan', 'pengumuman'))
-            ->setPaper('a4', 'portrait');
-
-        return $pdf->download('surat-keputusan-' . $pendaftaran->no_pendaftaran . '.pdf');
     }
 }

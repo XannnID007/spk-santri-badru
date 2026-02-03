@@ -8,6 +8,7 @@ use App\Models\NilaiTes;
 use App\Models\Perhitungan;
 use App\Models\Profil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SmartCalculationService
 {
@@ -25,33 +26,71 @@ class SmartCalculationService
                     ->where('status_verifikasi', 'diterima')
                     ->get();
 
+               if ($pendaftarans->isEmpty()) {
+                    return [
+                         'success' => false,
+                         'message' => 'Tidak ada pendaftar yang memenuhi syarat untuk dihitung.',
+                    ];
+               }
+
                // Ambil semua kriteria aktif
                $kriterias = Kriteria::where('status_aktif', true)->get();
+
+               if ($kriterias->isEmpty()) {
+                    return [
+                         'success' => false,
+                         'message' => 'Tidak ada kriteria aktif. Silakan aktifkan kriteria terlebih dahulu.',
+                    ];
+               }
+
+               // Validasi total bobot harus = 1 (100%)
+               $totalBobot = $kriterias->sum('bobot');
+               if (abs($totalBobot - 1) > 0.001) {
+                    return [
+                         'success' => false,
+                         'message' => "Total bobot kriteria harus 100% (saat ini: " . ($totalBobot * 100) . "%)",
+                    ];
+               }
 
                // Ambil semua nilai untuk normalisasi
                $allNilai = [];
                foreach ($kriterias as $kriteria) {
-                    $nilaiKriteria = NilaiTes::where('kriteria_id', $kriteria->kriteria_id)
-                         ->whereIn('pendaftaran_id', $pendaftarans->pluck('pendaftaran_id'))
-                         ->pluck('nilai')
-                         ->toArray();
+                    $nilaiKriteria = [];
 
                     // Untuk kriteria ekonomi (penghasilan), ambil dari profil
                     if ($kriteria->kode_kriteria === 'C3') {
-                         $nilaiKriteria = [];
                          foreach ($pendaftarans as $pendaftaran) {
                               $profil = Profil::where('pengguna_id', $pendaftaran->pengguna_id)->first();
-                              if ($profil) {
-                                   $nilaiKriteria[] = $profil->penghasilan_ortu;
+                              if ($profil && $profil->penghasilan_ortu !== null) {
+                                   $nilaiKriteria[] = floatval($profil->penghasilan_ortu);
                               }
                          }
+                    } else {
+                         // Untuk kriteria lain, ambil dari nilai_tes
+                         $nilaiKriteria = NilaiTes::where('kriteria_id', $kriteria->kriteria_id)
+                              ->whereIn('pendaftaran_id', $pendaftarans->pluck('pendaftaran_id'))
+                              ->whereNotNull('nilai')
+                              ->pluck('nilai')
+                              ->map(fn($n) => floatval($n))
+                              ->toArray();
                     }
+
+                    // Validasi ada nilai untuk kriteria ini
+                    if (empty($nilaiKriteria)) {
+                         return [
+                              'success' => false,
+                              'message' => "Tidak ada nilai untuk kriteria: {$kriteria->nama_kriteria}. Pastikan semua pendaftar memiliki nilai.",
+                         ];
+                    }
+
+                    $maxNilai = max($nilaiKriteria);
+                    $minNilai = min($nilaiKriteria);
 
                     $allNilai[$kriteria->kriteria_id] = [
                          'jenis' => $kriteria->jenis,
                          'nilai' => $nilaiKriteria,
-                         'max' => !empty($nilaiKriteria) ? max($nilaiKriteria) : 100,
-                         'min' => !empty($nilaiKriteria) ? min($nilaiKriteria) : 0,
+                         'max' => $maxNilai,
+                         'min' => $minNilai,
                     ];
                }
 
@@ -60,19 +99,32 @@ class SmartCalculationService
                // Hitung untuk setiap pendaftar
                foreach ($pendaftarans as $pendaftaran) {
                     $nilaiAkhir = 0;
+                    $detailKriteria = [];
+                    $isComplete = true;
 
                     foreach ($kriterias as $kriteria) {
                          // Ambil nilai untuk kriteria ini
                          if ($kriteria->kode_kriteria === 'C3') {
                               // Untuk ekonomi, ambil dari profil
                               $profil = Profil::where('pengguna_id', $pendaftaran->pengguna_id)->first();
-                              $nilai = $profil ? $profil->penghasilan_ortu : 0;
+                              $nilai = $profil && $profil->penghasilan_ortu !== null
+                                   ? floatval($profil->penghasilan_ortu)
+                                   : null;
                          } else {
                               // Untuk kriteria lain, ambil dari nilai_tes
                               $nilaiTes = NilaiTes::where('pendaftaran_id', $pendaftaran->pendaftaran_id)
                                    ->where('kriteria_id', $kriteria->kriteria_id)
                                    ->first();
-                              $nilai = $nilaiTes ? $nilaiTes->nilai : 0;
+                              $nilai = $nilaiTes && $nilaiTes->nilai !== null
+                                   ? floatval($nilaiTes->nilai)
+                                   : null;
+                         }
+
+                         // Jika ada nilai yang null, tandai sebagai tidak lengkap
+                         if ($nilai === null) {
+                              $isComplete = false;
+                              Log::warning("Pendaftar {$pendaftaran->no_pendaftaran} tidak memiliki nilai untuk kriteria {$kriteria->nama_kriteria}");
+                              continue;
                          }
 
                          // Normalisasi nilai
@@ -84,12 +136,32 @@ class SmartCalculationService
                          );
 
                          // Kalikan dengan bobot
-                         $nilaiAkhir += $nilaiNormalisasi * $kriteria->bobot;
+                         $nilaiTerbobot = $nilaiNormalisasi * $kriteria->bobot;
+                         $nilaiAkhir += $nilaiTerbobot;
+
+                         $detailKriteria[] = [
+                              'kriteria' => $kriteria->nama_kriteria,
+                              'nilai_asli' => $nilai,
+                              'nilai_normalisasi' => round($nilaiNormalisasi, 4),
+                              'bobot' => $kriteria->bobot,
+                              'nilai_terbobot' => round($nilaiTerbobot, 4),
+                         ];
                     }
 
-                    $results[] = [
-                         'pendaftaran_id' => $pendaftaran->pendaftaran_id,
-                         'nilai_akhir' => round($nilaiAkhir, 4),
+                    // Hanya simpan jika data lengkap
+                    if ($isComplete) {
+                         $results[] = [
+                              'pendaftaran_id' => $pendaftaran->pendaftaran_id,
+                              'nilai_akhir' => round($nilaiAkhir, 4),
+                              'detail' => $detailKriteria,
+                         ];
+                    }
+               }
+
+               if (empty($results)) {
+                    return [
+                         'success' => false,
+                         'message' => 'Tidak ada pendaftar dengan data nilai lengkap. Pastikan semua nilai telah diinput.',
                     ];
                }
 
@@ -115,9 +187,13 @@ class SmartCalculationService
                     'success' => true,
                     'message' => 'Perhitungan SMART berhasil!',
                     'total' => count($results),
+                    'details' => $results,
                ];
           } catch (\Exception $e) {
                DB::rollBack();
+               Log::error('Error dalam perhitungan SMART: ' . $e->getMessage());
+               Log::error($e->getTraceAsString());
+
                return [
                     'success' => false,
                     'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
@@ -126,16 +202,28 @@ class SmartCalculationService
      }
 
      /**
-      * Normalisasi nilai berdasarkan jenis kriteria
+      * Normalisasi nilai berdasarkan jenis kriteria (DIPERBAIKI)
       */
      private function normalisasiNilai($nilai, $max, $min, $jenis)
      {
+          // Konversi ke float untuk memastikan
+          $nilai = floatval($nilai);
+          $max = floatval($max);
+          $min = floatval($min);
+
+          // Jika semua nilai sama (max = min), return 1 (sempurna)
+          if ($max == $min) {
+               return 1.0;
+          }
+
           if ($jenis === 'benefit') {
                // Untuk benefit: semakin tinggi semakin baik
-               return $max > 0 ? $nilai / $max : 0;
+               // Rumus: (nilai - min) / (max - min)
+               return ($nilai - $min) / ($max - $min);
           } else {
                // Untuk cost: semakin rendah semakin baik
-               return $nilai > 0 ? $min / $nilai : 0;
+               // Rumus: (max - nilai) / (max - min)
+               return ($max - $nilai) / ($max - $min);
           }
      }
 
@@ -147,9 +235,51 @@ class SmartCalculationService
           DB::beginTransaction();
 
           try {
+               // Validasi input
+               $batasLulus = floatval($batasLulus);
+               $batasCadangan = floatval($batasCadangan);
+
+               if ($batasLulus <= 0 || $batasCadangan <= 0) {
+                    return [
+                         'success' => false,
+                         'message' => 'Batas lulus dan cadangan harus lebih dari 0',
+                    ];
+               }
+
+               if ($metode === 'ranking') {
+                    // Untuk ranking, cadangan harus lebih besar dari lulus
+                    if ($batasCadangan <= $batasLulus) {
+                         return [
+                              'success' => false,
+                              'message' => 'Batas ranking cadangan harus lebih besar dari batas lulus',
+                         ];
+                    }
+               } else {
+                    // Untuk passing grade, cadangan harus lebih kecil dari lulus
+                    if ($batasCadangan >= $batasLulus) {
+                         return [
+                              'success' => false,
+                              'message' => 'Batas nilai cadangan harus lebih kecil dari batas lulus',
+                         ];
+                    }
+               }
+
                $perhitungans = Perhitungan::whereHas('pendaftaran', function ($query) use ($periodeId) {
                     $query->where('periode_id', $periodeId);
                })->orderBy('ranking', 'asc')->get();
+
+               if ($perhitungans->isEmpty()) {
+                    return [
+                         'success' => false,
+                         'message' => 'Belum ada hasil perhitungan. Silakan hitung SMART terlebih dahulu.',
+                    ];
+               }
+
+               $statusCount = [
+                    'diterima' => 0,
+                    'cadangan' => 0,
+                    'tidak_diterima' => 0,
+               ];
 
                foreach ($perhitungans as $perhitungan) {
                     if ($metode === 'ranking') {
@@ -162,7 +292,7 @@ class SmartCalculationService
                               $status = 'tidak_diterima';
                          }
                     } else {
-                         // Berdasarkan passing grade (nilai akhir)
+                         // Berdasarkan passing grade (nilai akhir dalam persen)
                          $nilaiPersen = $perhitungan->nilai_akhir * 100;
                          if ($nilaiPersen >= $batasLulus) {
                               $status = 'diterima';
@@ -174,6 +304,7 @@ class SmartCalculationService
                     }
 
                     $perhitungan->update(['status_kelulusan' => $status]);
+                    $statusCount[$status]++;
                }
 
                DB::commit();
@@ -181,9 +312,12 @@ class SmartCalculationService
                return [
                     'success' => true,
                     'message' => 'Status kelulusan berhasil ditentukan!',
+                    'summary' => $statusCount,
                ];
           } catch (\Exception $e) {
                DB::rollBack();
+               Log::error('Error dalam menentukan kelulusan: ' . $e->getMessage());
+
                return [
                     'success' => false,
                     'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
@@ -199,6 +333,20 @@ class SmartCalculationService
           DB::beginTransaction();
 
           try {
+               // Cek apakah semua perhitungan sudah memiliki status kelulusan
+               $withoutStatus = Perhitungan::whereHas('pendaftaran', function ($query) use ($periodeId) {
+                    $query->where('periode_id', $periodeId);
+               })
+                    ->whereNull('status_kelulusan')
+                    ->count();
+
+               if ($withoutStatus > 0) {
+                    return [
+                         'success' => false,
+                         'message' => "Masih ada {$withoutStatus} pendaftar tanpa status kelulusan. Tentukan kelulusan terlebih dahulu.",
+                    ];
+               }
+
                $updated = Perhitungan::whereHas('pendaftaran', function ($query) use ($periodeId) {
                     $query->where('periode_id', $periodeId);
                })->update(['is_published' => true]);
@@ -211,6 +359,8 @@ class SmartCalculationService
                ];
           } catch (\Exception $e) {
                DB::rollBack();
+               Log::error('Error dalam publish pengumuman: ' . $e->getMessage());
+
                return [
                     'success' => false,
                     'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
@@ -228,6 +378,27 @@ class SmartCalculationService
 
           $kriterias = Kriteria::where('status_aktif', true)->get();
 
+          // Ambil data untuk normalisasi
+          $allNilai = [];
+          foreach ($kriterias as $kriteria) {
+               if ($kriteria->kode_kriteria === 'C3') {
+                    $nilai = Profil::whereHas('pengguna.pendaftaran', function ($q) use ($pendaftaran) {
+                         $q->where('periode_id', $pendaftaran->periode_id);
+                    })->pluck('penghasilan_ortu')->toArray();
+               } else {
+                    $nilai = NilaiTes::where('kriteria_id', $kriteria->kriteria_id)
+                         ->whereHas('pendaftaran', function ($q) use ($pendaftaran) {
+                              $q->where('periode_id', $pendaftaran->periode_id);
+                         })
+                         ->pluck('nilai')->toArray();
+               }
+
+               $allNilai[$kriteria->kriteria_id] = [
+                    'max' => !empty($nilai) ? max($nilai) : 100,
+                    'min' => !empty($nilai) ? min($nilai) : 0,
+               ];
+          }
+
           $details = [];
           foreach ($kriterias as $kriteria) {
                if ($kriteria->kode_kriteria === 'C3') {
@@ -237,12 +408,21 @@ class SmartCalculationService
                     $nilai = $nilaiTes ? $nilaiTes->nilai : 0;
                }
 
+               $nilaiNormalisasi = $this->normalisasiNilai(
+                    $nilai,
+                    $allNilai[$kriteria->kriteria_id]['max'],
+                    $allNilai[$kriteria->kriteria_id]['min'],
+                    $kriteria->jenis
+               );
+
                $details[] = [
                     'kriteria' => $kriteria->nama_kriteria,
                     'kode' => $kriteria->kode_kriteria,
-                    'nilai' => $nilai,
+                    'nilai_asli' => $nilai,
+                    'nilai_normalisasi' => round($nilaiNormalisasi, 4),
                     'bobot' => $kriteria->bobot,
                     'jenis' => $kriteria->jenis,
+                    'nilai_terbobot' => round($nilaiNormalisasi * $kriteria->bobot, 4),
                ];
           }
 

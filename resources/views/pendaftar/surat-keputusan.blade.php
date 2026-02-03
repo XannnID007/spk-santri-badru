@@ -29,47 +29,59 @@
             box-sizing: border-box;
         }
 
-        /* Kop Surat */
-        .header-table {
-            width: 100%;
-            border-bottom: 4px double #000;
-            padding-bottom: 10px;
+        /* KOP SURAT BARU - FORMAL STYLE */
+        .header-formal {
+            border: 3px solid #000;
+            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
+            padding: 15px;
             margin-bottom: 30px;
-        }
-
-        .logo-cell {
-            width: 15%;
             text-align: center;
-            vertical-align: middle;
         }
 
-        .logo {
-            width: 90px;
-            height: auto;
-        }
-
-        .text-cell {
-            width: 85%;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        .org-name {
-            font-size: 14pt;
-            margin: 0;
+        .header-formal .main-title {
+            font-size: 13pt;
             font-weight: bold;
-        }
-
-        .inst-name {
-            font-size: 18pt;
-            margin: 5px 0;
-            font-weight: bold;
+            margin: 0 0 5px 0;
+            line-height: 1.3;
             text-transform: uppercase;
         }
 
-        .address {
-            font-size: 10pt;
-            font-style: italic;
+        .header-formal .sub-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .header-formal .location-info {
+            font-size: 9pt;
+            margin: 0 0 5px 0;
+            line-height: 1.2;
+        }
+
+        .header-formal .regulation-info {
+            font-size: 8pt;
+            margin: 5px 0;
+            line-height: 1.3;
+        }
+
+        .header-formal .bank-info {
+            font-size: 9pt;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #c00;
+        }
+
+        .header-formal .npwp-info {
+            font-size: 9pt;
+            font-weight: bold;
+            margin: 3px 0 0 0;
+        }
+
+        .header-formal .address-footer {
+            font-size: 7pt;
+            margin: 5px 0 0 0;
+            line-height: 1.2;
         }
 
         /* Judul Surat */
@@ -140,14 +152,13 @@
             width: 40%;
             text-align: center;
             float: right;
-            /* Force right align */
         }
 
         .signature-space {
             height: 80px;
         }
 
-        /* Print Button (Hide on Print) */
+        /* Print Button */
         .no-print {
             text-align: center;
             margin-bottom: 20px;
@@ -185,7 +196,7 @@
 
             .page {
                 margin: 0;
-                padding: 0;
+                padding: 20mm;
                 width: 100%;
                 box-shadow: none;
                 border: none;
@@ -206,26 +217,32 @@
     </div>
 
     <div class="page">
-        <table class="header-table">
-            <tr>
-                <td class="logo-cell">
-                    @php
-                        $logoPath = $pengaturan->logo
-                            ? asset('storage/' . $pengaturan->logo)
-                            : 'https://via.placeholder.com/90';
-                    @endphp
-                    <img src="{{ $logoPath }}" alt="Logo" class="logo">
-                </td>
-                <td class="text-cell">
-                    <p class="org-name">PANITIA PENERIMAAN SANTRI BARU</p>
-                    <h1 class="inst-name">{{ $pengaturan->nama_pesantren ?? 'PONDOK PESANTREN AL-BADRU' }}</h1>
-                    <p class="address">
-                        {{ $pengaturan->alamat ?? 'Alamat Belum Diatur' }}<br>
-                        Telp: {{ $pengaturan->telepon }} | Email: {{ $pengaturan->email }}
-                    </p>
-                </td>
-            </tr>
-        </table>
+        <!-- HEADER FORMAL BARU -->
+        <div class="header-formal">
+            <div class="main-title">
+                YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+                BADRU PASIRKALIKI
+            </div>
+            <div class="sub-title">
+                KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+            </div>
+            <div class="regulation-info">
+                (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+                (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+                April-2013)<br>
+                (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+            </div>
+            <div class="bank-info">
+                (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+            </div>
+            <div class="npwp-info">
+                (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+            </div>
+            <div class="address-footer">
+                Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682
+                / 082126428817 Kode Pos
+            </div>
+        </div>
 
         <div class="letter-title">
             <h2>SURAT KEPUTUSAN</h2>
@@ -243,7 +260,8 @@
 
             <p>Berdasarkan hasil seleksi administrasi, tes tulis, dan wawancara yang telah dilaksanakan pada periode
                 <strong>{{ $pendaftaran->periode->nama_periode }}</strong>, Panitia Penerimaan Santri Baru
-                {{ $pengaturan->nama_pesantren }} dengan ini memberitahukan bahwa:</p>
+                {{ $pengaturan->nama_pesantren }} dengan ini memberitahukan bahwa:
+            </p>
 
             <table class="data-table">
                 <tr>

@@ -61,14 +61,14 @@ class DatabaseSeeder extends Seeder
 
         // Seeder Pengaturan
         Pengaturan::create([
-            'nama_pesantren' => 'Yayasan Pondok Pesantren Al-Badru',
+            'nama_pesantren' => 'Pondok Pesantren Al-Badru',
             'alamat' => 'Jl. Budi, Kelurahan Pasirkaliki, Kecamatan Cimahi Utara, Kota Cimahi, RT 02 / RW 04, Jawa Barat',
             'telepon' => '0221234567',
             'email' => 'info@albadru.ac.id',
             'website' => 'www.albadru.ac.id',
-            'jumlah_santri' => 450,
-            'jumlah_guru' => 35,
-            'jumlah_alumni' => 1200,
+            'jumlah_santri' => 150,
+            'jumlah_guru' => 10,
+            'jumlah_alumni' => 245,
         ]);
 
         // Seeder Persyaratan
@@ -119,13 +119,8 @@ class DatabaseSeeder extends Seeder
             Persyaratan::create($persyaratan);
         }
 
-        // Seeder Periode Aktif
-        Periode::create([
-            'nama_periode' => 'Pendaftaran Santri Baru 2025/2026',
-            'tanggal_mulai' => '2025-05-01',
-            'tanggal_selesai' => '2025-08-31',
-            'kuota_santri' => 100,
-            'status_aktif' => true,
+        $this->call([
+            PeriodePendaftarSeeder::class,
         ]);
     }
 }

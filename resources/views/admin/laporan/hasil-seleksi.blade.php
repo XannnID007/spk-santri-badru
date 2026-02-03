@@ -12,29 +12,78 @@
             margin: 15px;
         }
 
-        .header {
+        /* HEADER FORMAL BARU */
+        .header-formal {
+            border: 3px solid #000;
+            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
+            padding: 15px;
+            margin-bottom: 25px;
             text-align: center;
-            border-bottom: 3px double #000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 16pt;
+        .header-formal .main-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            line-height: 1.3;
             text-transform: uppercase;
         }
 
-        .header p {
+        .header-formal .sub-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+        }
+
+        .header-formal .regulation-info {
+            font-size: 7.5pt;
             margin: 5px 0;
-            font-size: 9pt;
+            line-height: 1.3;
+        }
+
+        .header-formal .bank-info {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #c00;
+        }
+
+        .header-formal .npwp-info {
+            font-size: 8.5pt;
+            font-weight: bold;
+            margin: 3px 0 0 0;
+        }
+
+        .header-formal .address-footer {
+            font-size: 7pt;
+            margin: 5px 0 0 0;
+            line-height: 1.2;
+        }
+
+        .report-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .report-title h2 {
+            margin: 0;
+            text-decoration: underline;
+            font-size: 14pt;
+        }
+
+        .report-title p {
+            margin: 5px 0;
+            font-size: 11pt;
+            font-weight: bold;
         }
 
         .info-box {
             background: #f3f4f6;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
             border-left: 4px solid #10b981;
+            border: 1px solid #d1d5db;
         }
 
         .info-box table {
@@ -43,6 +92,7 @@
 
         .info-box td {
             padding: 3px 0;
+            font-size: 9.5pt;
         }
 
         table.data {
@@ -94,13 +144,13 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             text-align: right;
             font-size: 9pt;
         }
 
         .signature {
-            margin-top: 50px;
+            margin-top: 60px;
         }
 
         .rank-1 {
@@ -115,19 +165,57 @@
         .rank-3 {
             background: #fed7aa !important;
         }
+
+        .keterangan-box {
+            margin-top: 20px;
+            padding: 12px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border: 1px solid #fbbf24;
+        }
+
+        .keterangan-box strong {
+            font-size: 10pt;
+        }
+
+        .keterangan-box small {
+            font-size: 8.5pt;
+            line-height: 1.6;
+        }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>{{ $pengaturan->nama_pesantren ?? 'Pondok Pesantren Al-Badru' }}</h1>
-        <p>{{ $pengaturan->alamat ?? '' }}</p>
-        <p>Telp: {{ $pengaturan->telepon ?? '' }} | Email: {{ $pengaturan->email ?? '' }}</p>
+    <!-- HEADER FORMAL BARU -->
+    <div class="header-formal">
+        <div class="main-title">
+            YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+            BADRU PASIRKALIKI
+        </div>
+        <div class="sub-title">
+            KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+        </div>
+        <div class="regulation-info">
+            (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+            (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+            April-2013)<br>
+            (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+        </div>
+        <div class="bank-info">
+            (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+        </div>
+        <div class="npwp-info">
+            (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+        </div>
+        <div class="address-footer">
+            Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682 /
+            082126428817 Kode Pos
+        </div>
     </div>
 
-    <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="margin: 0; text-decoration: underline;">LAPORAN HASIL SELEKSI AKHIR</h2>
-        <p style="margin: 5px 0;">{{ $periode->nama_periode }}</p>
+    <div class="report-title">
+        <h2>LAPORAN HASIL SELEKSI AKHIR</h2>
+        <p>{{ $periode->nama_periode }}</p>
     </div>
 
     <div class="info-box">
@@ -196,7 +284,7 @@
         </tbody>
     </table>
 
-    <div style="margin-top: 20px; padding: 10px; background: #fef3c7; border-left: 4px solid #f59e0b;">
+    <div class="keterangan-box">
         <strong>Keterangan:</strong><br>
         <small>
             - Nilai Akhir dihitung menggunakan metode SMART (Simple Multi-Attribute Rating Technique)<br>

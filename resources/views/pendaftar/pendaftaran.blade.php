@@ -49,12 +49,21 @@
                     </div>
 
                     @if ($pendaftaran->status_verifikasi === 'diterima')
-                        {{-- Button Trigger Modal --}}
-                        <button onclick="openPdfModal('{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}')"
-                            class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 group">
-                            <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
-                            Lihat & Cetak Kartu Ujian
-                        </button>
+                        {{-- Tombol untuk buka modal dan download --}}
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button
+                                onclick="openPdfModal('{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}')"
+                                class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 group">
+                                <i class="fas fa-eye mr-2 group-hover:scale-110 transition-transform"></i>
+                                Lihat Kartu Ujian
+                            </button>
+
+                            <a href="{{ route('pendaftar.cetak-kartu', $pendaftaran->pendaftaran_id) }}" target="_blank"
+                                class="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-600/20 group">
+                                <i class="fas fa-download mr-2 group-hover:scale-110 transition-transform"></i>
+                                Download PDF
+                            </a>
+                        </div>
                     @else
                         <button disabled
                             class="inline-flex items-center px-6 py-3 bg-slate-100 text-slate-400 rounded-xl font-bold cursor-not-allowed">
@@ -175,19 +184,17 @@
         @endif
     </div>
 
-    {{-- MODAL PREVIEW PDF (Dipindah ke Stack 'modals') --}}
+    {{-- MODAL PREVIEW PDF --}}
     @push('modals')
         <div id="pdfModal" class="fixed inset-0 z-[100] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <!-- Backdrop -->
-            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" id="modalBackdrop"></div>
 
             <div class="fixed inset-0 z-[101] overflow-y-auto">
-                <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                    <!-- Modal Panel -->
+                <div class="flex min-h-full items-center justify-center p-4">
                     <div id="modalPanel"
-                        class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-4xl opacity-0 scale-95">
+                        class="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all w-full max-w-4xl">
 
-                        <!-- Header -->
+                        {{-- Header --}}
                         <div class="bg-white px-4 py-4 border-b border-slate-100 flex justify-between items-center">
                             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <span
@@ -202,30 +209,26 @@
                             </button>
                         </div>
 
-                        <!-- Body (Iframe) -->
+                        {{-- Body (Iframe) --}}
                         <div class="relative bg-slate-100 h-[70vh]">
-                            {{-- Loading Indicator --}}
                             <div id="pdfLoading"
-                                class="absolute inset-0 flex flex-col items-center justify-center text-slate-500 z-0">
-                                <i class="fas fa-spinner fa-spin text-3xl text-blue-500 mb-2"></i>
+                                class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+                                <i class="fas fa-spinner fa-spin text-3xl text-blue-500 mb-3"></i>
                                 <p class="text-sm font-medium">Memuat Kartu Ujian...</p>
-                                <p class="text-xs text-slate-400 mt-2 font-medium bg-white/50 px-3 py-1 rounded-full">Mohon
-                                    jangan refresh halaman selama proses ini.</p>
+                                <p class="text-xs text-slate-400 mt-2 bg-white/70 px-3 py-1 rounded-full">Mohon tunggu sebentar
+                                </p>
                             </div>
-                            {{-- Iframe --}}
-                            {{-- FIX: Tambah class bg-white agar menutupi loader jika onload gagal --}}
-                            <iframe id="pdfFrame" class="w-full h-full relative z-10 bg-white" src=""
-                                frameborder="0" onload="hidePdfLoading()"></iframe>
+                            <iframe id="pdfFrame" class="w-full h-full" frameborder="0"></iframe>
                         </div>
 
-                        <!-- Footer -->
-                        <div class="bg-slate-50 px-4 py-4 sm:flex sm:flex-row-reverse sm:px-6 gap-3 border-t border-slate-100">
+                        {{-- Footer --}}
+                        <div class="bg-slate-50 px-4 py-4 flex flex-row-reverse gap-3 border-t border-slate-100">
                             <a id="btnDownloadPdf" href="#" target="_blank"
-                                class="inline-flex w-full justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 sm:w-auto gap-2 items-center">
+                                class="inline-flex justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 gap-2 items-center">
                                 <i class="fas fa-download"></i> Download PDF
                             </a>
                             <button type="button" onclick="closePdfModal()"
-                                class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 sm:mt-0 sm:w-auto">
+                                class="inline-flex justify-center rounded-xl bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
                                 Tutup
                             </button>
                         </div>
@@ -238,7 +241,7 @@
 
 @section('scripts')
     <script>
-        // === MODAL LOGIC ===
+        // === MODAL PDF LOGIC ===
         function openPdfModal(url) {
             const modal = document.getElementById('pdfModal');
             const backdrop = document.getElementById('modalBackdrop');
@@ -247,31 +250,35 @@
             const downloadBtn = document.getElementById('btnDownloadPdf');
             const loading = document.getElementById('pdfLoading');
 
-            // Reset Loading
-            loading.classList.remove('hidden');
+            // Reset state
+            loading.style.display = 'flex';
+            frame.src = '';
 
-            // Set URL - Tambahkan timestamp untuk mencegah cache browser yang bisa bikin stuck
-            // Cache busting: menambahkan ?t=123123123 di akhir URL
-            frame.src = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+            // Set URL dengan cache busting
+            const pdfUrl = url + (url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
 
+            // Setup iframe
+            frame.onload = function() {
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 300);
+            };
+
+            // Fallback jika iframe tidak trigger onload (untuk PDF)
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 2000);
+
+            frame.src = pdfUrl;
             downloadBtn.href = url;
 
-            // Show Modal Container
+            // Show modal
             modal.classList.remove('hidden');
-
-            // Animate In (Sedikit delay agar transisi CSS jalan)
             setTimeout(() => {
-                backdrop.classList.remove('opacity-0');
-                panel.classList.remove('opacity-0', 'scale-95');
-                panel.classList.add('opacity-100', 'scale-100');
-            }, 50);
-
-            // FALLBACK PENTING:
-            // Banyak browser modern tidak menjalankan event 'onload' untuk PDF di iframe.
-            // Kita paksa hilangkan loader setelah 3 detik agar user tidak melihat loading selamanya.
-            setTimeout(() => {
-                hidePdfLoading();
-            }, 3000);
+                backdrop.style.opacity = '1';
+                panel.style.opacity = '1';
+                panel.style.transform = 'scale(1)';
+            }, 10);
         }
 
         function closePdfModal() {
@@ -280,43 +287,28 @@
             const panel = document.getElementById('modalPanel');
             const frame = document.getElementById('pdfFrame');
 
-            // Animate Out
-            backdrop.classList.add('opacity-0');
-            panel.classList.remove('opacity-100', 'scale-100');
-            panel.classList.add('opacity-0', 'scale-95');
+            backdrop.style.opacity = '0';
+            panel.style.opacity = '0';
+            panel.style.transform = 'scale(0.95)';
 
-            // Hide Modal Container after animation
             setTimeout(() => {
                 modal.classList.add('hidden');
-                frame.src = ''; // Clear iframe agar stop loading/playing
+                frame.src = '';
             }, 300);
         }
 
-        function hidePdfLoading() {
-            const loading = document.getElementById('pdfLoading');
-            if (loading) {
-                loading.classList.add('hidden');
-            }
-        }
-
-        // Close on Backdrop Click
-        const backdrop = document.getElementById('modalBackdrop');
-        if (backdrop) {
-            backdrop.addEventListener('click', closePdfModal);
-        }
-
-        // === EXISTING LOGIC ===
+        // Close on backdrop click
         document.addEventListener('DOMContentLoaded', function() {
-            // Cek token
-            const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+            const backdrop = document.getElementById('modalBackdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', closePdfModal);
+            }
 
-            // 2. Script Form Pendaftaran (Hanya jika form ada)
+            // Form submission
             const form = document.getElementById('pendaftaranForm');
             if (form) {
                 form.addEventListener('submit', async function(e) {
-                    e.preventDefault(); // Mencegah refresh halaman
-                    console.log("Submit Pendaftaran...");
+                    e.preventDefault();
 
                     const pernyataan = document.getElementById('pernyataan');
                     if (!pernyataan.checked) {
@@ -332,34 +324,33 @@
                     const submitBtn = document.getElementById('submitBtn');
                     const originalBtnContent = submitBtn.innerHTML;
 
-                    // Disable tombol
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
                     submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
                     const formData = new FormData(this);
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute(
+                        'content');
 
                     try {
                         const response = await fetch('{{ route('pendaftar.pendaftaran.store') }}', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json' // Penting agar server mengembalikan JSON
+                                'Accept': 'application/json'
                             },
                             body: formData
                         });
 
-                        // Cek tipe konten respons
                         const contentType = response.headers.get("content-type");
                         let data;
 
                         if (contentType && contentType.indexOf("application/json") !== -1) {
                             data = await response.json();
                         } else {
-                            // Jika respons bukan JSON (misal error 500 HTML)
                             const text = await response.text();
                             console.error("Non-JSON Response:", text);
-                            throw new Error("Terjadi kesalahan server (500).");
+                            throw new Error("Terjadi kesalahan server.");
                         }
 
                         if (data.success) {
@@ -390,7 +381,6 @@
                             confirmButtonColor: '#f97316'
                         });
 
-                        // Reset Button jika gagal
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = originalBtnContent;
                         submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
