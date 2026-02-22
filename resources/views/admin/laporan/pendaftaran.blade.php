@@ -3,281 +3,405 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Data Pendaftar</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Laporan Data Pendaftar - {{ $periode->nama_periode }}</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: "Times New Roman", Times, serif;
             font-size: 11pt;
-            margin: 20px;
-            line-height: 1.4;
+            color: #000;
+            background: #fff;
+            line-height: 1.5;
+            padding: 22px 28px;
         }
 
-        /* HEADER FORMAL */
-        .header-formal {
+        /* ===== KOP SURAT =====
+         * 3 kolom: logo | teks | dummy (sama lebar logo)
+         * → teks selalu center sempurna
+         */
+        .kop-surat {
+            width: 100%;
             border: 3px solid #000;
-            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
-            padding: 15px;
-            margin-bottom: 25px;
-            text-align: center;
+            border-collapse: collapse;
+            margin-bottom: 22px;
+            background: linear-gradient(to bottom,
+                    #FFFF00 0%, #FFFF00 60%,
+                    #00FF00 60%, #00FF00 100%);
         }
 
-        .header-formal .main-title {
+        .kop-col-logo {
+            width: 100px;
+            vertical-align: middle;
+            text-align: center;
+            padding: 14px 8px 14px 14px;
+        }
+
+        .kop-col-logo img {
+            width: 76px;
+            height: 76px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .kop-logo-placeholder {
+            width: 76px;
+            height: 76px;
+            border: 2px solid #555;
+            line-height: 76px;
+            font-size: 8pt;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .kop-col-text {
+            vertical-align: middle;
+            text-align: center;
+            padding: 14px 6px;
+        }
+
+        .kop-col-text .main-title {
             font-size: 13pt;
             font-weight: bold;
-            margin: 0 0 5px 0;
-            line-height: 1.3;
             text-transform: uppercase;
+            line-height: 1.35;
+            margin-bottom: 4px;
         }
 
-        .header-formal .sub-title {
-            font-size: 11pt;
+        .kop-col-text .sub-title {
+            font-size: 10.5pt;
             font-weight: bold;
-            margin: 0 0 8px 0;
             text-transform: uppercase;
+            margin-bottom: 7px;
         }
 
-        .header-formal .regulation-info {
+        .kop-col-text .regulation-info {
             font-size: 7.5pt;
-            margin: 5px 0;
-            line-height: 1.3;
+            line-height: 1.45;
+            margin-bottom: 4px;
         }
 
-        .header-formal .bank-info {
+        .kop-col-text .bank-info {
             font-size: 8.5pt;
             font-weight: bold;
-            margin: 5px 0;
-            color: #c00;
+            color: #c00000;
+            margin-bottom: 3px;
         }
 
-        .header-formal .npwp-info {
+        .kop-col-text .npwp-info {
             font-size: 8.5pt;
             font-weight: bold;
-            margin: 3px 0 0 0;
+            margin-bottom: 5px;
         }
 
-        .header-formal .address-footer {
+        .kop-col-text .address-footer {
             font-size: 7pt;
-            margin: 5px 0 0 0;
-            line-height: 1.2;
+            line-height: 1.35;
         }
 
-        /* TITLE */
-        .report-title {
+        .kop-col-dummy {
+            width: 100px;
+        }
+
+        /* ===== JUDUL ===== */
+        .judul-wrapper {
             text-align: center;
-            margin-bottom: 30px;
+            margin: 0 0 20px 0;
         }
 
-        .report-title h2 {
-            margin: 0 0 5px 0;
-            text-decoration: underline;
-            font-size: 14pt;
+        .judul-utama {
+            font-size: 13pt;
+            font-weight: bold;
             text-transform: uppercase;
+            text-decoration: underline;
         }
 
-        .report-title p {
-            margin: 0;
-            font-size: 12pt;
+        .judul-sub {
+            font-size: 11pt;
+            margin-top: 5px;
         }
 
-        /* INFO TABLE */
-        .info-section {
-            margin-bottom: 25px;
-        }
-
-        .info-table {
+        /* ===== INFO BLOCK ===== */
+        .info-block {
+            border: 1px solid #000;
+            margin-bottom: 18px;
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
         }
 
-        .info-table td {
-            padding: 5px 10px;
-            font-size: 11pt;
+        .info-block td {
+            padding: 6px 14px;
+            font-size: 10.5pt;
             vertical-align: top;
         }
 
-        .info-table .label-cell {
+        .info-block td.label {
+            width: 195px;
+            font-weight: bold;
+        }
+
+        .info-block td.sep {
+            width: 12px;
+        }
+
+        .info-block td.div-left {
+            border-left: 1px solid #ddd;
+            padding-left: 18px;
             width: 180px;
-            font-weight: normal;
+            font-weight: bold;
         }
 
-        .info-table .separator {
-            width: 15px;
+        .info-block tr+tr td {
+            border-top: 1px solid #ddd;
         }
 
-        /* DATA TABLE - FORMAL STYLE */
-        table.data {
+        /* ===== REKAP ===== */
+        .rekap-wrapper {
+            margin-bottom: 18px;
+        }
+
+        .rekap-title {
+            font-size: 10.5pt;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .rekap-table {
+            border-collapse: collapse;
+        }
+
+        .rekap-table td {
+            border: 1px solid #000;
+            padding: 5px 18px;
+            font-size: 10pt;
+            text-align: center;
+        }
+
+        .rekap-table td.rl {
+            text-align: left;
+            padding-left: 12px;
+            font-weight: bold;
+            width: 175px;
+        }
+
+        /* ===== TABEL DATA ===== */
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 8px;
+        }
+
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
         }
 
-        table.data th {
+        table.data-table th {
+            background: #000;
+            color: #fff;
             border: 1px solid #000;
             padding: 8px 6px;
             font-size: 10pt;
             font-weight: bold;
             text-align: center;
-            background: #fff;
+            font-family: Arial, sans-serif;
         }
 
-        table.data td {
+        table.data-table td {
             border: 1px solid #000;
-            padding: 6px;
+            padding: 7px 6px;
             font-size: 10pt;
             vertical-align: top;
         }
 
-        table.data td.text-center {
+        table.data-table tr:nth-child(even) td {
+            background: #f7f7f7;
+        }
+
+        table.data-table td.center {
             text-align: center;
         }
 
-        table.data td.text-right {
-            text-align: right;
+        /* ===== FOOTER TTD ===== */
+        .footer-section {
+            margin-top: 32px;
         }
 
-        /* FOOTER */
-        .footer {
-            margin-top: 40px;
-        }
-
-        .footer-table {
+        .ttd-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        .signature-section {
+        .ttd-kiri {
+            width: 55%;
+            vertical-align: top;
+            font-size: 10pt;
+        }
+
+        .ttd-kanan {
+            width: 45%;
             text-align: center;
+            vertical-align: top;
+            font-size: 10.5pt;
         }
 
-        .signature-space {
-            height: 70px;
+        .ttd-space {
+            height: 68px;
         }
 
-        .signer-name {
+        .ttd-name {
             font-weight: bold;
             text-decoration: underline;
         }
 
-        @media print {
-            body {
-                margin: 15px;
-            }
+        .catatan {
+            margin-top: 22px;
+            border-top: 1px solid #000;
+            padding-top: 6px;
+            font-size: 8pt;
+            color: #555;
         }
     </style>
 </head>
 
 <body>
-    <!-- HEADER FORMAL -->
-    <div class="header-formal">
-        <div class="main-title">
-            YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
-            BADRU PASIRKALIKI
-        </div>
-        <div class="sub-title">
-            KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
-        </div>
-        <div class="regulation-info">
-            (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
-            (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
-            April-2013)<br>
-            (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
-        </div>
-        <div class="bank-info">
-            (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
-        </div>
-        <div class="npwp-info">
-            (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
-        </div>
-        <div class="address-footer">
-            Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682 /
-            082126428817 Kode Pos
-        </div>
+
+    <!-- KOP SURAT -->
+    <table class="kop-surat">
+        <tr>
+            <td class="kop-col-logo">
+                @php
+                    $logoPath = null;
+                    if ($pengaturan && $pengaturan->logo) {
+                        $p = public_path('storage/' . $pengaturan->logo);
+                        if (file_exists($p)) {
+                            $logoPath = $p;
+                        }
+                    }
+                @endphp
+                @if ($logoPath)
+                    <img src="{{ $logoPath }}" alt="Logo Yayasan">
+                @else
+                    <div class="kop-logo-placeholder">LOGO</div>
+                @endif
+            </td>
+
+            <td class="kop-col-text">
+                <div class="main-title">
+                    YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+                    BADRU PASIRKALIKI
+                </div>
+                <div class="sub-title">
+                    KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+                </div>
+                <div class="regulation-info">
+                    (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+                    (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+                    April-2013)<br>
+                    (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+                </div>
+                <div class="bank-info">
+                    (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+                </div>
+                <div class="npwp-info">
+                    (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+                </div>
+                <div class="address-footer">
+                    Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi
+                    No.Hp. 081842682 / 082126428817 Kode Pos
+                </div>
+            </td>
+
+            <td class="kop-col-dummy"></td>
+        </tr>
+    </table>
+
+    <!-- JUDUL -->
+    <div class="judul-wrapper">
+        <div class="judul-utama">Laporan Data Pendaftar</div>
+        <div class="judul-sub">{{ $periode->nama_periode }}</div>
     </div>
 
-    <!-- TITLE -->
-    <div class="report-title">
-        <h2>LAPORAN DATA PENDAFTAR</h2>
-        <p>{{ $periode->nama_periode }}</p>
-    </div>
+    <!-- INFO -->
+    <table class="info-block">
+        <tr>
+            <td class="label">Periode Pendaftaran</td>
+            <td class="sep">:</td>
+            <td>{{ $periode->nama_periode }}</td>
+            <td class="div-left">Tanggal Cetak</td>
+            <td class="sep">:</td>
+            <td>{{ now()->translatedFormat('d F Y') }}, Pukul {{ now()->format('H:i') }} WIB</td>
+        </tr>
+        <tr>
+            <td class="label">Rentang Waktu Pendaftaran</td>
+            <td class="sep">:</td>
+            <td>{{ $periode->tanggal_mulai->translatedFormat('d F Y') }} s/d
+                {{ $periode->tanggal_selesai->translatedFormat('d F Y') }}</td>
+            <td class="div-left">Kuota Santri</td>
+            <td class="sep">:</td>
+            <td>{{ $periode->kuota_santri }} Orang</td>
+        </tr>
+        <tr>
+            <td class="label">Total Pendaftar</td>
+            <td class="sep">:</td>
+            <td>{{ $totalPendaftar }} Orang</td>
+            <td class="div-left">Sisa Kuota</td>
+            <td class="sep">:</td>
+            <td>{{ max(0, $periode->kuota_santri - $totalPendaftar) }} Orang</td>
+        </tr>
+    </table>
 
-    <!-- INFO SECTION -->
-    <div class="info-section">
-        <table class="info-table">
+    <!-- REKAP -->
+    <div class="rekap-wrapper">
+        <div class="rekap-title">Rekapitulasi Status Verifikasi:</div>
+        <table class="rekap-table">
             <tr>
-                <td class="label-cell">Periode Pendaftaran</td>
-                <td class="separator">:</td>
-                <td>{{ $periode->nama_periode }}</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Tanggal Cetak</td>
-                <td class="separator">:</td>
-                <td>{{ now()->format('d F Y, H:i') }} WIB</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Rentang Waktu Pendaftaran</td>
-                <td class="separator">:</td>
-                <td>{{ $periode->tanggal_mulai->format('d F Y') }} s/d {{ $periode->tanggal_selesai->format('d F Y') }}
-                </td>
-            </tr>
-            <tr>
-                <td class="label-cell">Kuota Santri</td>
-                <td class="separator">:</td>
-                <td>{{ $periode->kuota_santri }} Orang</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Total Pendaftar</td>
-                <td class="separator">:</td>
-                <td>{{ $totalPendaftar }} Orang</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Sisa Kuota</td>
-                <td class="separator">:</td>
-                <td>{{ $periode->kuota_santri - $totalPendaftar }} Orang</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Status Terverifikasi</td>
-                <td class="separator">:</td>
-                <td>{{ $verified }} Orang</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Status Pending</td>
-                <td class="separator">:</td>
-                <td>{{ $pending }} Orang</td>
-            </tr>
-            <tr>
-                <td class="label-cell">Status Ditolak</td>
-                <td class="separator">:</td>
-                <td>{{ $rejected }} Orang</td>
+                <td class="rl">Terverifikasi (Diterima)</td>
+                <td>{{ $verified }} orang</td>
+                <td class="rl">Status Pending</td>
+                <td>{{ $pending }} orang</td>
+                <td class="rl">Status Ditolak</td>
+                <td>{{ $rejected }} orang</td>
             </tr>
         </table>
     </div>
 
-    <!-- DATA TABLE -->
-    <table class="data">
+    <!-- TABEL DATA -->
+    <div class="section-title">Daftar Pendaftar:</div>
+    <table class="data-table">
         <thead>
             <tr>
-                <th style="width: 35px;">No.</th>
-                <th style="width: 110px;">No. Pendaftaran</th>
+                <th style="width:40px;">No.</th>
+                <th style="width:122px;">No. Pendaftaran</th>
                 <th>Nama Lengkap</th>
-                <th style="width: 130px;">NIK</th>
+                <th style="width:138px;">NIK</th>
                 <th>Asal Sekolah</th>
-                <th style="width: 60px;">Rata-rata Nilai</th>
-                <th style="width: 90px;">Tanggal Submit</th>
-                <th style="width: 100px;">Status Verifikasi</th>
+                <th style="width:68px;">Nilai Rata</th>
+                <th style="width:92px;">Tgl. Submit</th>
+                <th style="width:112px;">Status Verifikasi</th>
             </tr>
         </thead>
         <tbody>
             @forelse($pendaftarans as $index => $p)
                 <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $p->no_pendaftaran }}</td>
+                    <td class="center">{{ $index + 1 }}</td>
+                    <td class="center">{{ $p->no_pendaftaran }}</td>
                     <td>{{ $p->pengguna->profil->nama_lengkap ?? $p->pengguna->nama }}</td>
-                    <td class="text-center">{{ $p->pengguna->profil->nik ?? '-' }}</td>
+                    <td class="center">{{ $p->pengguna->profil->nik ?? '-' }}</td>
                     <td>{{ $p->asal_sekolah }}</td>
-                    <td class="text-center">{{ $p->rata_nilai }}</td>
-                    <td class="text-center">{{ $p->tanggal_submit->format('d/m/Y') }}</td>
-                    <td class="text-center">
+                    <td class="center">{{ $p->rata_nilai }}</td>
+                    <td class="center">{{ $p->tanggal_submit->format('d/m/Y') }}</td>
+                    <td class="center">
                         @if ($p->status_verifikasi === 'diterima')
                             Terverifikasi
                         @elseif($p->status_verifikasi === 'pending')
@@ -289,30 +413,52 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" style="text-align: center; padding: 20px;">
+                    <td colspan="8" class="center" style="padding:22px; font-style:italic; color:#666;">
                         Belum ada data pendaftar untuk periode ini.
                     </td>
                 </tr>
             @endforelse
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5"
+                    style="text-align:right; font-weight:bold; padding:7px 10px; border:1px solid #000; background:#f0f0f0;">
+                    Total Pendaftar
+                </td>
+                <td colspan="3"
+                    style="font-weight:bold; text-align:center; padding:7px; border:1px solid #000; background:#f0f0f0;">
+                    {{ $totalPendaftar }} Orang
+                </td>
+            </tr>
+        </tfoot>
     </table>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        <table class="footer-table">
+    <!-- TANDA TANGAN -->
+    <div class="footer-section">
+        <table class="ttd-table">
             <tr>
-                <td style="width: 55%;"></td>
-                <td style="width: 45%;">
-                    <div class="signature-section">
-                        <p>Kota Cimahi, {{ now()->format('d F Y') }}</p>
-                        <p>Ketua Panitia PSB,</p>
-                        <div class="signature-space"></div>
-                        <p class="signer-name">_______________________</p>
-                    </div>
+                <td class="ttd-kiri">
+                    <strong>Catatan:</strong><br>
+                    <small>
+                        - Dokumen ini dicetak secara otomatis oleh Sistem Informasi PSB.<br>
+                        - Keabsahan dokumen dapat diverifikasi melalui sistem.
+                    </small>
+                </td>
+                <td class="ttd-kanan">
+                    Kota Cimahi, {{ now()->translatedFormat('d F Y') }}<br><br>
+                    Ketua Panitia Penerimaan Santri Baru,<br><br>
+                    <div class="ttd-space"></div>
+                    <span class="ttd-name">( __________________________ )</span>
                 </td>
             </tr>
         </table>
     </div>
+
+    <div class="catatan">
+        Dokumen ini dicetak dari Sistem Informasi Penerimaan Santri Baru &bull;
+        Dicetak pada: {{ now()->format('d/m/Y H:i:s') }} WIB
+    </div>
+
 </body>
 
 </html>

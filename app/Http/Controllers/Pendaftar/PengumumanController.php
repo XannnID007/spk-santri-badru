@@ -97,6 +97,7 @@ class PengumumanController extends Controller
                 ->setPaper('a4', 'portrait')
                 ->setOption('enable-local-file-access', true)
                 ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isRemoteEnabled', true)
                 ->setOption('isRemoteEnabled', true);
 
             return $pdf->download('surat-keputusan-' . $pendaftaran->no_pendaftaran . '.pdf');

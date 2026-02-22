@@ -6,124 +6,168 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Kartu Peserta Ujian - {{ $pendaftaran->no_pendaftaran }}</title>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #fff;
-            color: #000;
-            font-size: 12pt;
-        }
-
-        .card {
-            width: 100%;
-            border: 2px solid #000;
-            padding: 20px;
             box-sizing: border-box;
         }
 
-        /* HEADER FORMAL BARU */
-        .header-formal {
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            color: #000;
+            background: #fff;
+            padding: 22px 28px;
+        }
+
+        /* ===== KOP SURAT ===== */
+        .kop-surat {
             border: 3px solid #000;
-            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
-            padding: 12px;
             margin-bottom: 20px;
-            text-align: center;
         }
 
-        .header-formal .main-title {
-            font-size: 12pt;
-            font-weight: bold;
-            margin: 0 0 4px 0;
-            line-height: 1.3;
-            text-transform: uppercase;
-        }
-
-        .header-formal .sub-title {
-            font-size: 10pt;
-            font-weight: bold;
-            margin: 0 0 6px 0;
-            text-transform: uppercase;
-        }
-
-        .header-formal .regulation-info {
-            font-size: 7pt;
-            margin: 4px 0;
-            line-height: 1.2;
-        }
-
-        .header-formal .bank-info {
-            font-size: 8pt;
-            font-weight: bold;
-            margin: 4px 0;
-            color: #c00;
-        }
-
-        .header-formal .npwp-info {
-            font-size: 8pt;
-            font-weight: bold;
-            margin: 3px 0 0 0;
-        }
-
-        .header-formal .address-footer {
-            font-size: 6.5pt;
-            margin: 4px 0 0 0;
-            line-height: 1.1;
-        }
-
-        /* Title */
-        .card-title {
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            text-decoration: underline;
-        }
-
-        /* Content Layout */
-        .content-wrapper {
+        .kop-inner {
             display: table;
             width: 100%;
-            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #FFFF00 0%, #FFFF00 60%, #00FF00 60%, #00FF00 100%);
         }
 
-        .content-table {
-            width: 100%;
-            border-collapse: collapse;
+        .kop-logo-cell {
+            display: table-cell;
+            width: 100px;
+            vertical-align: middle;
+            text-align: center;
+            padding: 12px 10px 12px 14px;
         }
 
-        .photo-cell {
-            width: 120px;
-            vertical-align: top;
-            padding-right: 20px;
+        .kop-logo-cell img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+        }
+
+        .kop-logo-placeholder {
+            width: 72px;
+            height: 72px;
+            border: 2px solid #333;
+            display: inline-block;
+            line-height: 72px;
+            font-size: 8pt;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.55);
             text-align: center;
         }
 
-        .photo-box {
-            width: 3cm;
-            height: 4cm;
-            border: 2px solid #000;
-            display: block;
-            object-fit: cover;
-            margin: 0 auto;
+        .kop-text-cell {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            padding: 12px 8px;
         }
 
-        .photo-placeholder {
-            width: 3cm;
-            height: 4cm;
-            border: 2px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
+        .kop-text-cell .main-title {
+            font-size: 12pt;
             font-weight: bold;
-            background: #f9fafb;
-            margin: 0 auto;
+            text-transform: uppercase;
+            line-height: 1.35;
+            margin-bottom: 3px;
+        }
+
+        .kop-text-cell .sub-title {
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .kop-text-cell .regulation-info {
+            font-size: 7pt;
+            line-height: 1.4;
+            margin-bottom: 3px;
+        }
+
+        .kop-text-cell .bank-info {
+            font-size: 8pt;
+            font-weight: bold;
+            color: #c00000;
+            margin-bottom: 2px;
+        }
+
+        .kop-text-cell .npwp-info {
+            font-size: 8pt;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .kop-text-cell .address-footer {
+            font-size: 6.5pt;
+            line-height: 1.3;
+        }
+
+        .kop-spacer {
+            display: table-cell;
+            width: 100px;
+        }
+
+        /* ===== JUDUL ===== */
+        .judul-kartu {
+            text-align: center;
+            margin: 0 0 18px 0;
+        }
+
+        .judul-kartu h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: underline;
+            letter-spacing: 1.5px;
+        }
+
+        .judul-kartu .periode {
+            font-size: 10.5pt;
+            margin-top: 4px;
+        }
+
+        /* ===== KONTEN UTAMA ===== */
+        .konten-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+        }
+
+        .foto-cell {
+            width: 120px;
+            vertical-align: top;
+            padding-right: 18px;
+        }
+
+        .foto-box {
+            width: 95px;
+            height: 125px;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+
+        .foto-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .data-cell {
             vertical-align: top;
+        }
+
+        /* No. Pendaftaran highlight */
+        .no-pendaftaran-box {
+            background: #000;
+            color: #fff;
+            padding: 7px 14px;
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            letter-spacing: 2.5px;
+            margin-bottom: 12px;
         }
 
         .info-table {
@@ -132,215 +176,292 @@
         }
 
         .info-table td {
-            padding: 4px 0;
-            font-size: 13px;
+            padding: 5px 0;
+            font-size: 10.5pt;
             vertical-align: top;
+            line-height: 1.5;
         }
 
-        .label {
-            width: 130px;
+        .info-table td.label {
+            width: 140px;
             font-weight: bold;
         }
 
-        .separator {
+        .info-table td.sep {
             width: 15px;
-            text-align: center;
         }
 
-        .value {
-            font-weight: normal;
+        .info-table tr+tr td {
+            border-top: 1px dotted #bbb;
+            padding-top: 5px;
         }
 
-        /* Footer */
-        .footer {
-            margin-top: 30px;
+        /* ===== TANDA TANGAN ===== */
+        .ttd-wrapper {
+            border-top: 1px solid #000;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        .ttd-table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        .footer-table {
-            width: 100%;
-        }
-
-        .qr-cell {
+        .ttd-kiri {
             width: 60%;
             vertical-align: bottom;
-            font-size: 10px;
-            color: #555;
+            font-size: 9pt;
+            color: #444;
         }
 
-        .signature-cell {
+        .ttd-kanan {
             width: 40%;
             text-align: center;
             vertical-align: top;
-            font-size: 12px;
+            font-size: 10.5pt;
         }
 
-        .signature-space {
-            height: 60px;
+        .ttd-space {
+            height: 56px;
         }
 
-        .signer-name {
+        .ttd-name {
             font-weight: bold;
-            text-decoration: underline;
         }
 
-        /* Notes */
-        .notes {
-            margin-top: 20px;
-            border: 1px dashed #555;
-            padding: 10px;
-            font-size: 10px;
-            background-color: #fafafa;
+        .barcode-area {
+            border: 1px solid #aaa;
+            padding: 5px 12px;
+            display: inline-block;
+            font-family: monospace;
+            font-size: 13pt;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
 
-        .notes h4 {
-            margin: 0 0 5px 0;
-            font-size: 11px;
+        .cetak-info {
+            font-style: italic;
+            margin-top: 5px;
+            font-size: 8pt;
+            color: #666;
         }
 
-        .notes ul {
+        /* ===== TATA TERTIB ===== */
+        .tata-tertib {
+            margin-top: 16px;
+            border: 1.5px dashed #555;
+            padding: 12px 16px;
+            background: #fafafa;
+        }
+
+        .tata-tertib h4 {
+            font-size: 10pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .tata-tertib ol {
             margin: 0;
-            padding-left: 15px;
+            padding-left: 20px;
         }
 
-        tr {
-            page-break-inside: avoid;
+        .tata-tertib ol li {
+            font-size: 9.5pt;
+            margin-bottom: 4px;
+            line-height: 1.5;
         }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <!-- HEADER FORMAL BARU -->
-        <div class="header-formal">
-            <div class="main-title">
-                YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
-                BADRU PASIRKALIKI
-            </div>
-            <div class="sub-title">
-                KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
-            </div>
-            <div class="regulation-info">
-                (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
-                (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
-                April-2013)<br>
-                (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
-            </div>
-            <div class="bank-info">
-                (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
-            </div>
-            <div class="npwp-info">
-                (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
-            </div>
-            <div class="address-footer">
-                Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi No.Hp. 081842682
-                / 082126428817 Kode Pos
-            </div>
-        </div>
 
-        <h2 class="card-title">KARTU PESERTA UJIAN</h2>
-
-        <table class="content-table">
-            <tr>
-                <td class="photo-cell">
-                    @php
-                        $fotoPath = null;
-                        if ($pendaftaran->pengguna->profil && $pendaftaran->pengguna->profil->foto) {
-                            $path = public_path('storage/' . $pendaftaran->pengguna->profil->foto);
-                            if (file_exists($path)) {
-                                $fotoPath = $path;
-                            }
+    <!-- KOP SURAT -->
+    <div class="kop-surat">
+        <div class="kop-inner">
+            <div class="kop-logo-cell">
+                @php
+                    $logoPath = null;
+                    if ($pengaturan && $pengaturan->logo) {
+                        $path = public_path('storage/' . $pengaturan->logo);
+                        if (file_exists($path)) {
+                            $logoPath = $path;
                         }
-                    @endphp
+                    }
+                @endphp
+                @if ($logoPath)
+                    <img src="{{ $logoPath }}" alt="Logo">
+                @else
+                    <div class="kop-logo-placeholder">LOGO</div>
+                @endif
+            </div>
 
-                    @if ($fotoPath)
-                        <img src="{{ $fotoPath }}" alt="Foto Peserta" class="photo-box">
-                    @else
-                        <div class="photo-placeholder">
-                            FOTO 3x4
-                        </div>
-                    @endif
-                </td>
+            <div class="kop-text-cell">
+                <div class="main-title">
+                    YAYASAN ANAK YATIM/PIATU, ANAK ASUH DAN DHUAFA<br>
+                    BADRU PASIRKALIKI
+                </div>
+                <div class="sub-title">
+                    KELURAHAN PASIRKALIKI KECAMATAN CIMAHI UTARA KOTA CIMAHI PROVINSI JAWA BARAT
+                </div>
+                <div class="regulation-info">
+                    (SK Menteri Hukum dan HAM Republik Indonesia No.AHU-5019.AH.01.04.2013 Tgl 06-09-2013)<br>
+                    (Akte Notaris Pendiri Yayasan Badru Pasirkaliki oleh JJN ABDUL JALIL, S.H.,Sp.N. No.: 15. Tgl 16
+                    April-2013)<br>
+                    (Ijasz Bid. Usaha Sosial KESOS No : 458.2/5-PSN-UPPKS/Komas/2013) Bakor Rek: 1071-10-003833-53-5)
+                </div>
+                <div class="bank-info">
+                    (Bank bjb CABANG CIMAHI An. Yayasan Badru Pasirkaliki No Rekening :0057421924100)
+                </div>
+                <div class="npwp-info">
+                    (NPWP Yayasan Badru Pasirkaliki No : 31.773.122.2-421.000 Tgl 03 Juni 2013)
+                </div>
+                <div class="address-footer">
+                    Sekretariat : Jalan Budhi RT 002 RW 004 Kel. Pasirkaliki Kec. Cimahi Utara Kota Cimahi
+                    No.Hp. 081842682 / 082126428817 Kode Pos
+                </div>
+            </div>
 
-                <td class="data-cell">
-                    <table class="info-table">
+            <div class="kop-spacer"></div>
+        </div>
+    </div>
+
+    <!-- JUDUL KARTU -->
+    <div class="judul-kartu">
+        <h2>Kartu Peserta Ujian</h2>
+        <div class="periode">{{ $pendaftaran->periode->nama_periode }}</div>
+    </div>
+
+    <!-- KONTEN: FOTO + DATA -->
+    <table class="konten-table">
+        <tr>
+            <td class="foto-cell">
+                @php
+                    $fotoPath = null;
+                    if ($pendaftaran->pengguna->profil && $pendaftaran->pengguna->profil->foto) {
+                        $path = public_path('storage/' . $pendaftaran->pengguna->profil->foto);
+                        if (file_exists($path)) {
+                            $fotoPath = $path;
+                        }
+                    } elseif ($pendaftaran->file_foto) {
+                        $path = public_path('storage/' . $pendaftaran->file_foto);
+                        if (file_exists($path)) {
+                            $fotoPath = $path;
+                        }
+                    }
+                @endphp
+
+                @if ($fotoPath)
+                    <div class="foto-box">
+                        <img src="{{ $fotoPath }}" alt="Foto Peserta">
+                    </div>
+                @else
+                    <table style="width:95px; height:125px; border:2px solid #000; border-collapse:collapse;">
                         <tr>
-                            <td class="label">No. Pendaftaran</td>
-                            <td class="separator">:</td>
-                            <td class="value" style="font-size: 14px; font-weight: bold;">
-                                {{ $pendaftaran->no_pendaftaran }}
+                            <td
+                                style="text-align:center; vertical-align:middle; font-size:9pt; font-weight:bold; color:#555; background:#f5f5f5;">
+                                FOTO<br>3 × 4
                             </td>
-                        </tr>
-                        <tr>
-                            <td class="label">Nama Lengkap</td>
-                            <td class="separator">:</td>
-                            <td class="value" style="text-transform: uppercase;">
-                                {{ $pendaftaran->pengguna->profil->nama_lengkap ?? $pendaftaran->pengguna->nama }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="label">NISN / NIK</td>
-                            <td class="separator">:</td>
-                            <td class="value">{{ $pendaftaran->pengguna->profil->nik ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Tempat, Tgl Lahir</td>
-                            <td class="separator">:</td>
-                            <td class="value">
-                                {{ $pendaftaran->pengguna->profil->tempat_lahir ?? '' }},
-                                {{ $pendaftaran->pengguna->profil ? $pendaftaran->pengguna->profil->tanggal_lahir->format('d F Y') : '' }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="label">Asal Sekolah</td>
-                            <td class="separator">:</td>
-                            <td class="value">{{ $pendaftaran->asal_sekolah }}</td>
-                        </tr>
-                        <tr>
-                            <td class="label">Periode</td>
-                            <td class="separator">:</td>
-                            <td class="value">{{ $pendaftaran->periode->nama_periode }}</td>
                         </tr>
                     </table>
+                @endif
+                <div style="text-align:center; font-size:8pt; margin-top:5px; color:#555;">Pas Foto Terbaru</div>
+            </td>
+
+            <td class="data-cell">
+                <!-- Nomor Pendaftaran -->
+                <div class="no-pendaftaran-box">
+                    {{ $pendaftaran->no_pendaftaran }}
+                </div>
+
+                <table class="info-table">
+                    <tr>
+                        <td class="label">Nama Lengkap</td>
+                        <td class="sep">:</td>
+                        <td style="text-transform:uppercase; font-weight:bold;">
+                            {{ $pendaftaran->pengguna->profil->nama_lengkap ?? $pendaftaran->pengguna->nama }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">NISN / NIK</td>
+                        <td class="sep">:</td>
+                        <td>{{ $pendaftaran->pengguna->profil->nik ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tempat, Tgl. Lahir</td>
+                        <td class="sep">:</td>
+                        <td>
+                            {{ $pendaftaran->pengguna->profil->tempat_lahir ?? '-' }},
+                            {{ $pendaftaran->pengguna->profil ? $pendaftaran->pengguna->profil->tanggal_lahir->translatedFormat('d F Y') : '-' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Jenis Kelamin</td>
+                        <td class="sep">:</td>
+                        <td>
+                            @if (isset($pendaftaran->pengguna->profil->jenis_kelamin))
+                                {{ $pendaftaran->pengguna->profil->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="label">Asal Sekolah</td>
+                        <td class="sep">:</td>
+                        <td>{{ $pendaftaran->asal_sekolah }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Periode</td>
+                        <td class="sep">:</td>
+                        <td>{{ $pendaftaran->periode->nama_periode }}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Tanggal Daftar</td>
+                        <td class="sep">:</td>
+                        <td>{{ $pendaftaran->tanggal_submit->translatedFormat('d F Y') }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- TANDA TANGAN -->
+    <div class="ttd-wrapper">
+        <table class="ttd-table">
+            <tr>
+                <td class="ttd-kiri">
+                    <div class="barcode-area">{{ $pendaftaran->no_pendaftaran }}</div>
+                    <div class="cetak-info">
+                        Dicetak otomatis: {{ now()->format('d/m/Y H:i') }} WIB
+                    </div>
+                </td>
+                <td class="ttd-kanan">
+                    Kota Cimahi, {{ now()->translatedFormat('d F Y') }}<br>
+                    Panitia Penerimaan Santri Baru,<br>
+                    <div class="ttd-space"></div>
+                    <span class="ttd-name">( _______________________ )</span>
                 </td>
             </tr>
         </table>
-
-        <div class="footer">
-            <table class="footer-table">
-                <tr>
-                    <td class="qr-cell">
-                        <div style="border: 1px solid #ccc; padding: 5px; display: inline-block;">
-                            <span
-                                style="font-family: monospace; font-size: 14px; font-weight: bold; letter-spacing: 2px;">
-                                {{ $pendaftaran->no_pendaftaran }}
-                            </span>
-                        </div>
-                        <p style="margin-top: 5px; font-style: italic;">
-                            Dicetak otomatis oleh sistem pada: {{ now()->format('d/m/Y H:i') }}
-                        </p>
-                    </td>
-                    <td class="signature-cell">
-                        <p>Kota Cimahi, {{ now()->format('d F Y') }}</p>
-                        <p>Panitia PSB,</p>
-                        <div class="signature-space"></div>
-                        <p class="signer-name">( _______________________ )</p>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="notes">
-            <h4>TATA TERTIB UJIAN:</h4>
-            <ul>
-                <li>Kartu ini wajib dibawa (dicetak) saat pelaksanaan tes seleksi (Ujian Tulis & Wawancara).</li>
-                <li>Peserta wajib hadir 30 menit sebelum ujian dimulai.</li>
-                <li>Berpakaian rapi, sopan, dan menutup aurat (busana muslim/muslimah).</li>
-                <li>Membawa alat tulis sendiri (Pensil 2B, Penghapus, Pulpen Hitam).</li>
-                <li>Dilarang membawa alat komunikasi ke dalam ruang ujian.</li>
-            </ul>
-        </div>
     </div>
+
+    <!-- TATA TERTIB -->
+    <div class="tata-tertib">
+        <h4>&#9632; Tata Tertib Ujian Seleksi</h4>
+        <ol>
+            <li>Kartu ini <strong>WAJIB DIBAWA</strong> dan ditunjukkan kepada panitia saat pelaksanaan tes seleksi
+                (Ujian Tulis &amp; Wawancara).</li>
+            <li>Peserta wajib hadir di lokasi ujian <strong>30 menit</strong> sebelum ujian dimulai.</li>
+            <li>Berpakaian rapi, sopan, dan menutup aurat (busana muslim/muslimah).</li>
+            <li>Membawa alat tulis sendiri: Pensil 2B, Penghapus, dan Pulpen Hitam.</li>
+            <li>Dilarang membawa dan menggunakan alat komunikasi di dalam ruang ujian.</li>
+            <li>Peserta yang datang terlambat lebih dari 15 menit tidak diperkenankan mengikuti ujian.</li>
+        </ol>
+    </div>
+
 </body>
 
 </html>
