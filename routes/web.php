@@ -82,6 +82,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/perhitungan/hasil', [KelolaPerhitunganController::class, 'hasilPerhitungan'])->name('perhitungan.hasil');
     Route::post('/perhitungan/tentukan-kelulusan', [KelolaPerhitunganController::class, 'tentukanKelulusan'])->name('perhitungan.tentukan-kelulusan');
     Route::post('/perhitungan/publish', [KelolaPerhitunganController::class, 'publishPengumuman'])->name('perhitungan.publish');
+    Route::get('/perhitungan/detail/{id}', [KelolaPerhitunganController::class, 'detailPerhitungan'])->name('perhitungan.detail');
 
     // Kelola Kriteria (Resource)
     Route::resource('kriteria', KelolaKriteriaController::class);

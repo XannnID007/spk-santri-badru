@@ -12,9 +12,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Services\SmartCalculationService;
 
 class PengumumanController extends Controller
 {
+    protected $smartService;
+
+    public function __construct(SmartCalculationService $smartService)
+    {
+        $this->smartService = $smartService;
+    }
+
     public function index()
     {
         $user = Auth::user();
@@ -39,25 +47,20 @@ class PengumumanController extends Controller
             ]);
         }
 
-        // Ambil detail nilai per kriteria
-        $kriterias = Kriteria::where('status_aktif', true)->get();
+        // ✅ PERBAIKAN: Gunakan SmartCalculationService untuk mendapatkan detail perhitungan yang BENAR
+        $detailPerhitungan = $this->smartService->getDetailPerhitungan($pendaftaran->pendaftaran_id);
+
+        // Format data untuk view
         $nilaiDetails = [];
-
-        foreach ($kriterias as $kriteria) {
-            if ($kriteria->kode_kriteria === 'C3') {
-                // Untuk ekonomi, ambil dari profil
-                $nilai = $pendaftaran->pengguna->profil->penghasilan_ortu ?? 0;
-            } else {
-                $nilaiTes = NilaiTes::where('pendaftaran_id', $pendaftaran->pendaftaran_id)
-                    ->where('kriteria_id', $kriteria->kriteria_id)
-                    ->first();
-                $nilai = $nilaiTes ? $nilaiTes->nilai : 0;
-            }
-
+        foreach ($detailPerhitungan['details'] as $detail) {
             $nilaiDetails[] = [
-                'kriteria' => $kriteria->nama_kriteria,
-                'nilai' => $nilai,
-                'bobot' => $kriteria->bobot * 100,
+                'kriteria' => $detail['kriteria'],
+                'kode' => $detail['kode'],
+                'nilai_asli' => $detail['nilai_asli'],
+                'nilai_normalisasi' => $detail['nilai_normalisasi'],
+                'bobot' => $detail['bobot'] * 100, // Konversi ke persen
+                'nilai_terbobot' => $detail['nilai_terbobot'],
+                'jenis' => $detail['jenis'],
             ];
         }
 

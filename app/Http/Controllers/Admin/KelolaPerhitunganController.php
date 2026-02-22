@@ -165,6 +165,31 @@ class KelolaPerhitunganController extends Controller
         return view('admin.perhitungan.hasil', compact('hasil', 'periode', 'kriterias'));
     }
 
+    public function detailPerhitungan($id)
+    {
+        try {
+            $perhitungan = Perhitungan::with([
+                'pendaftaran.pengguna.profil',
+                'pendaftaran.nilaiTes.kriteria',
+                'pendaftaran.periode'
+            ])->findOrFail($id);
+
+            $detail = $this->smartService->getDetailPerhitungan($perhitungan->pendaftaran_id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $detail
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting detail perhitungan: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat detail perhitungan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function tentukanKelulusan(Request $request)
     {
         $validated = $request->validate([

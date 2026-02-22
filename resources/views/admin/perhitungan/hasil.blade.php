@@ -126,6 +126,9 @@
                             <th
                                 class="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-40">
                                 Status</th>
+                            <th
+                                class="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider w-32">
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -199,6 +202,14 @@
                                         </span>
                                     @endif
                                 </td>
+
+                                <td class="py-4 px-6 text-center">
+                                    <button
+                                        onclick="openDetailModal('{{ $h->perhitungan_id }}', '{{ $h->pendaftaran->pengguna->profil->nama_lengkap ?? $h->pendaftaran->pengguna->nama }}')"
+                                        class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-xs font-bold transition border border-blue-200">
+                                        <i class="fas fa-eye mr-1.5"></i> Detail
+                                    </button>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -265,7 +276,8 @@
                                 class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
                                 placeholder="Contoh: 50 (Ranking 1-50 Lulus)">
                             <p class="text-[10px] text-slate-400 mt-1">Pendaftar dengan ranking 1 sampai nilai ini akan
-                                <strong>DITERIMA</strong></p>
+                                <strong>DITERIMA</strong>
+                            </p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-2">
@@ -300,7 +312,8 @@
                                 class="w-full px-4 py-2.5 bg-white border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-orange-500 transition font-medium"
                                 placeholder="Contoh: 60">
                             <p class="text-[10px] text-slate-400 mt-1">Nilai antara ini dan batas lulus akan menjadi
-                                <strong>CADANGAN</strong></p>
+                                <strong>CADANGAN</strong>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -318,6 +331,10 @@
             </form>
         </div>
     </div>
+
+    @push('modals')
+        @include('admin.perhitungan.partials.detail-modal')
+    @endpush
 @endsection
 
 @section('scripts')
@@ -357,13 +374,11 @@
             if (metode === 'ranking') {
                 rankingMethod.classList.remove('hidden');
                 passingGradeMethod.classList.add('hidden');
-                // Reset passing grade inputs
                 document.querySelector('input[name="batas_lulus_grade"]').value = '';
                 document.querySelector('input[name="batas_cadangan_grade"]').value = '';
             } else {
                 rankingMethod.classList.add('hidden');
                 passingGradeMethod.classList.remove('hidden');
-                // Reset ranking inputs
                 document.querySelector('input[name="batas_lulus_ranking"]').value = '';
                 document.querySelector('input[name="batas_cadangan_ranking"]').value = '';
             }
@@ -384,7 +399,6 @@
                 batasCadangan = document.querySelector('input[name="batas_cadangan_grade"]').value;
             }
 
-            // Validasi input kosong
             if (!batasLulus || !batasCadangan) {
                 Swal.fire({
                     icon: 'warning',
@@ -395,7 +409,6 @@
                 return;
             }
 
-            // Validasi logika ranking
             if (metode === 'ranking') {
                 const lulus = parseInt(batasLulus);
                 const cadangan = parseInt(batasCadangan);
@@ -432,7 +445,6 @@
                 }
             }
 
-            // Validasi logika passing grade
             if (metode === 'passing_grade') {
                 const lulus = parseFloat(batasLulus);
                 const cadangan = parseFloat(batasCadangan);
@@ -489,21 +501,21 @@
                         html: `
                             <p class="mb-3">${data.message}</p>
                             ${data.summary ? `
-                                    <div class="text-sm bg-slate-50 p-3 rounded-lg">
-                                        <div class="flex justify-between mb-1">
-                                            <span>Diterima:</span>
-                                            <strong class="text-emerald-600">${data.summary.diterima}</strong>
-                                        </div>
-                                        <div class="flex justify-between mb-1">
-                                            <span>Cadangan:</span>
-                                            <strong class="text-amber-600">${data.summary.cadangan}</strong>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Tidak Lulus:</span>
-                                            <strong class="text-rose-600">${data.summary.tidak_diterima}</strong>
-                                        </div>
-                                    </div>
-                                ` : ''}
+                                                <div class="text-sm bg-slate-50 p-3 rounded-lg">
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>Diterima:</span>
+                                                        <strong class="text-emerald-600">${data.summary.diterima}</strong>
+                                                    </div>
+                                                    <div class="flex justify-between mb-1">
+                                                        <span>Cadangan:</span>
+                                                        <strong class="text-amber-600">${data.summary.cadangan}</strong>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span>Tidak Lulus:</span>
+                                                        <strong class="text-rose-600">${data.summary.tidak_diterima}</strong>
+                                                    </div>
+                                                </div>
+                                            ` : ''}
                         `,
                         confirmButtonColor: '#f97316'
                     }).then(() => {
